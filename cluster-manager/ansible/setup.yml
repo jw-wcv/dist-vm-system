@@ -1,0 +1,12 @@
+- name: Setup Worker VMs
+  hosts: workers
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Clone Distributed Compute Repo
+      git:
+        repo: 'https://github.com/your-org/distributed-compute.git'
+        dest: ~/distributed-compute

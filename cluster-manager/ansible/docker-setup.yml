@@ -1,0 +1,16 @@
+- name: Setup Docker Environment on Worker VMs
+  hosts: workers
+  tasks:
+    - name: Install Docker
+      apt:
+        name: docker.io
+        state: present
+
+    - name: Start Docker Service
+      service:
+        name: docker
+        state: started
+        enabled: true
+
+    - name: Pull Worker VM Docker Image
+      command: docker pull aleph/node

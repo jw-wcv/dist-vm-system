@@ -1,0 +1,17 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: distributed-compute
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: compute-node
+  template:
+    metadata:
+      labels:
+        app: compute-node
+    spec:
+      containers:
+      - name: compute-worker
+        image: distributed-compute:latest
