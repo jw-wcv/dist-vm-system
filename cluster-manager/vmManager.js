@@ -1,8 +1,10 @@
 // cluster-manager/vmManager.js
 
 import { alephChannel, alephNodeUrl, alephImage } from './constants.js';
-import { account, alephClient, getOrInitializeAlephClient } from './client.js';
 import forge from 'node-forge';
+const axios = require('axios');
+const { execSync } = require('child_process');
+const fs = require('fs');
 
 // Create SSH Key for VM Access
 export async function createSSHKey() {
@@ -16,20 +18,16 @@ export async function createSSHKey() {
 
     const label = 'ClusterVMKey';
 
-    const client = await getOrInitializeAlephClient();
-    const message = await client.createPost({
-        content: {
-            type: "ALEPH-SSH",
-            content: {
-                key: publicKeyOpenSSH,
-                label: label,
-            },
-        },
-        postType: "POST",
+    const message = await axios.post(`${alephNodeUrl}/api/create-ssh`, {
+        key: publicKeyOpenSSH,
+        label: label,
         channel: alephChannel,
     });
 
-    console.log('SSH Key created and uploaded to Aleph:', message.item_hash);
+    console.log('SSH Key created and uploaded:', message.data);
+
+    fs.writeFileSync(`${label}_private_key.pem`, privateKeyPem);
+    console.log('Private key saved locally.');
 
     return {
         privateKeyPem,
@@ -37,9 +35,31 @@ export async function createSSHKey() {
     };
 }
 
+// Automate VM Setup Script
+export function setupWorkerVM() {
+    console.log('Starting worker VM setup...');
+
+    try {
+        // Install Docker
+        execSync('sudo apt update && sudo apt install -y docker.io', { stdio: 'inherit' });
+
+        // Start and enable Docker service
+        execSync('sudo systemctl start docker && sudo systemctl enable docker', { stdio: 'inherit' });
+
+        // Pull Aleph Node Docker image
+        execSync('sudo docker pull aleph/node', { stdio: 'inherit' });
+
+        // Clone the distributed compute repo
+        execSync('git clone https://github.com/jw-wcv/dist-vm-system.git ~/distributed-compute', { stdio: 'inherit' });
+
+        console.log('Worker VM setup complete. Ready for workloads.');
+    } catch (error) {
+        console.error('Error during worker VM setup:', error.message);
+    }
+}
+
 // Create Aleph VM Instance for the Cluster
 export async function createVMInstance() {
-    const client = await getOrInitializeAlephClient();
     const sshKeys = await getSSHKeys();
     if (!sshKeys.length) {
         console.warn("No SSH keys found. Generating a new key...");
@@ -51,7 +71,7 @@ export async function createVMInstance() {
     const label = 'ClusterNode';
 
     console.log(`Deploying VM with label: ${label}`);
-    const instance = await client.createInstance({
+    const instance = await axios.post(`${alephNodeUrl}/api/create-vm`, {
         authorized_keys: [selectedKey],
         resources: { vcpus: 4, memory: 8192, seconds: 14400 },
         payment: { chain: "ETH", type: "hold" },
@@ -60,16 +80,15 @@ export async function createVMInstance() {
         image: alephImage,
     });
 
-    console.log(`VM ${instance.item_hash} created successfully.`);
-    return instance;
+    console.log(`VM created successfully:`, instance.data);
+    return instance.data;
 }
 
 // List Aleph VM Instances for the Cluster
 export async function listVMInstances() {
-    const client = await getOrInitializeAlephClient();
-    const response = await client.getMessages({ types: ['INSTANCE'], addresses: [account.address] });
+    const response = await axios.get(`${alephNodeUrl}/api/list-vms`);
 
-    const nodes = response.messages.map((msg) => ({
+    const nodes = response.data.map((msg) => ({
         id: msg.item_hash,
         name: msg.content.metadata.name,
         ipv6: msg.content.network_interface[0]?.ipv6 || 'N/A',

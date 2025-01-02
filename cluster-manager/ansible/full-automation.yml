@@ -1,0 +1,22 @@
+---
+- name: Full Automation for Worker VM Setup
+  hosts: localhost
+  tasks:
+    - name: Run Worker VM Setup Script
+      shell: |
+        sudo apt update && sudo apt install -y docker.io
+        sudo systemctl start docker && sudo systemctl enable docker
+        sudo docker pull aleph/node
+        git clone https://github.com/jw-wcv/dist-vm-system.git ~/distributed-compute
+
+    - name: Create VM
+      command: >
+        virt-install \
+        --name aleph-vm \
+        --vcpus 4 \
+        --memory 8192 \
+        --disk size=80 \
+        --os-variant ubuntu20.04 \
+        --network bridge=virbr0 \
+        --graphics none \
+        --console pty,target_type=serial
