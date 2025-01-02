@@ -1,0 +1,21 @@
+{
+    "name": "aleph-main-ui",
+    "version": "1.0.0",
+    "description": "Aleph distributed compute frontend and cluster manager",
+    "scripts": {
+      "start": "vite",
+      "build": "vite build",
+      "test": "echo \"No tests specified\" && exit 0"
+    },
+    "dependencies": {
+      "@aleph-sdk/client": "^0.4.0",
+      "@aleph-sdk/ethereum": "^0.4.0",
+      "forge": "^1.0.0",
+      "react": "^18.0.0",
+      "react-dom": "^18.0.0"
+    },
+    "devDependencies": {
+      "vite": "^4.0.0"
+    }
+  }
+  
