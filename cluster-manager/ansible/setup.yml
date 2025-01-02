@@ -8,5 +8,5 @@
 
     - name: Clone Distributed Compute Repo
       git:
-        repo: 'https://github.com/your-org/distributed-compute.git'
+        repo: 'https://github.com/jw-wcv/dist-vm-system.git'
         dest: ~/distributed-compute
