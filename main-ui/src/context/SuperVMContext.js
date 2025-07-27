@@ -1,46 +1,13 @@
-// SuperVMContext.jsx
-// 
-// Description: React Context for Super VM state management
-// 
-// This context provides global state management for the Super VM dashboard,
-// including system status, resource metrics, task management, and real-time
-// data updates. It centralizes all Super VM related state and operations.
-// 
-// Features:
-//   - Global state management
-//   - Real-time data polling
-//   - Task execution and monitoring
-//   - Resource utilization tracking
-//   - Error handling and notifications
-// 
-// Inputs: 
-//   - API calls to Super VM backend
-//   - User interactions and commands
-// Outputs: 
-//   - Global state updates
-//   - Real-time data streams
-//   - Task execution results
-// 
-// Dependencies: 
-//   - React Context API
-//   - Axios for API calls
-//   - React Hot Toast for notifications
-
 import React, { createContext, useContext, useReducer, useEffect } from 'react';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 
-// API Configuration
 const API_BASE_URL = 'http://localhost:3000/api';
 
-// Initial state
 const initialState = {
-  // System status
   systemStatus: 'initializing',
   isConnected: false,
   lastUpdate: null,
-  
-  // Resource pool
   resourcePool: {
     totalCPU: 0,
     totalMemory: 0,
@@ -54,18 +21,12 @@ const initialState = {
       gpu: 0
     }
   },
-  
-  // VM nodes
   nodes: [],
   activeNodes: 0,
-  
-  // Tasks
   tasks: [],
   activeTasks: 0,
   completedTasks: 0,
   failedTasks: 0,
-  
-  // Performance metrics
   performanceMetrics: {
     totalTasksExecuted: 0,
     averageExecutionTime: 0,
@@ -74,14 +35,11 @@ const initialState = {
     efficiency: 0,
     currentLoad: 0
   },
-  
-  // UI state
   isLoading: false,
   error: null,
-  refreshInterval: 5000 // 5 seconds
+  refreshInterval: 5000
 };
 
-// Action types
 const ACTION_TYPES = {
   SET_LOADING: 'SET_LOADING',
   SET_ERROR: 'SET_ERROR',
@@ -95,15 +53,12 @@ const ACTION_TYPES = {
   SET_CONNECTION_STATUS: 'SET_CONNECTION_STATUS'
 };
 
-// Reducer function
 const superVMReducer = (state, action) => {
   switch (action.type) {
     case ACTION_TYPES.SET_LOADING:
       return { ...state, isLoading: action.payload };
-    
     case ACTION_TYPES.SET_ERROR:
       return { ...state, error: action.payload, isLoading: false };
-    
     case ACTION_TYPES.UPDATE_SYSTEM_STATUS:
       return { 
         ...state, 
@@ -111,14 +66,12 @@ const superVMReducer = (state, action) => {
         isConnected: action.payload.isConnected,
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.UPDATE_RESOURCE_POOL:
       return { 
         ...state, 
         resourcePool: { ...action.payload },
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.UPDATE_NODES:
       return { 
         ...state, 
@@ -126,7 +79,6 @@ const superVMReducer = (state, action) => {
         activeNodes: action.payload.activeNodes,
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.UPDATE_TASKS:
       return { 
         ...state, 
@@ -136,21 +88,18 @@ const superVMReducer = (state, action) => {
         failedTasks: action.payload.failedTasks,
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.UPDATE_PERFORMANCE:
       return { 
         ...state, 
         performanceMetrics: { ...action.payload },
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.ADD_TASK:
       return { 
         ...state, 
         tasks: [...state.tasks, action.payload],
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.UPDATE_TASK:
       return { 
         ...state, 
@@ -159,42 +108,42 @@ const superVMReducer = (state, action) => {
         ),
         lastUpdate: new Date().toISOString()
       };
-    
     case ACTION_TYPES.SET_CONNECTION_STATUS:
       return { 
         ...state, 
         isConnected: action.payload,
         lastUpdate: new Date().toISOString()
       };
-    
     default:
       return state;
   }
 };
 
-// Create context
-const SuperVMContext = createContext();
+const SuperVMContext = createContext(initialState);
 
-// Provider component
 export const SuperVMProvider = ({ children }) => {
   const [state, dispatch] = useReducer(superVMReducer, initialState);
 
-  // API call helper
   const apiCall = async (endpoint, options = {}) => {
+    dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
+    dispatch({ type: ACTION_TYPES.SET_ERROR, payload: null });
     try {
       const response = await axios({
         url: `${API_BASE_URL}${endpoint}`,
-        timeout: 10000,
-        ...options
+        method: options.method || 'GET',
+        data: options.data
       });
+      dispatch({ type: ACTION_TYPES.SET_CONNECTION_STATUS, payload: true });
       return response.data;
     } catch (error) {
       console.error(`API call failed: ${endpoint}`, error);
+      dispatch({ type: ACTION_TYPES.SET_CONNECTION_STATUS, payload: false });
       throw error;
+    } finally {
+      dispatch({ type: ACTION_TYPES.SET_LOADING, payload: false });
     }
   };
 
-  // Fetch system status
   const fetchSystemStatus = async () => {
     try {
       const data = await apiCall('/super-vm/status');
@@ -204,49 +153,45 @@ export const SuperVMProvider = ({ children }) => {
     }
   };
 
-  // Fetch resource pool
   const fetchResourcePool = async () => {
     try {
       const data = await apiCall('/super-vm/resources');
       dispatch({ type: ACTION_TYPES.UPDATE_RESOURCE_POOL, payload: data });
     } catch (error) {
-      console.error('Failed to fetch resource pool:', error);
+      dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch resource pool' });
     }
   };
 
-  // Fetch performance metrics
   const fetchPerformanceMetrics = async () => {
     try {
       const data = await apiCall('/super-vm/performance');
       dispatch({ type: ACTION_TYPES.UPDATE_PERFORMANCE, payload: data });
     } catch (error) {
-      console.error('Failed to fetch performance metrics:', error);
+      dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch performance metrics' });
     }
   };
 
-  // Fetch nodes
   const fetchNodes = async () => {
     try {
       const data = await apiCall('/super-vm/nodes');
       dispatch({ type: ACTION_TYPES.UPDATE_NODES, payload: data });
     } catch (error) {
-      console.error('Failed to fetch nodes:', error);
+      dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch nodes' });
     }
   };
 
-  // Fetch tasks
   const fetchTasks = async () => {
     try {
       const data = await apiCall('/super-vm/tasks');
       dispatch({ type: ACTION_TYPES.UPDATE_TASKS, payload: data });
     } catch (error) {
-      console.error('Failed to fetch tasks:', error);
+      dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch tasks' });
     }
   };
 
-  // Execute task
   const executeTask = async (taskType, taskData) => {
     dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
+    dispatch({ type: ACTION_TYPES.SET_ERROR, payload: null });
     
     try {
       const result = await apiCall('/super-vm/execute-task', {
@@ -254,7 +199,6 @@ export const SuperVMProvider = ({ children }) => {
         data: { taskType, taskData }
       });
       
-      // Add task to list
       const newTask = {
         id: result.taskId || Date.now().toString(),
         type: taskType,
@@ -279,7 +223,6 @@ export const SuperVMProvider = ({ children }) => {
     }
   };
 
-  // Scale system
   const scaleSystem = async (nodes) => {
     try {
       const result = await apiCall('/super-vm/scale', {
@@ -296,7 +239,6 @@ export const SuperVMProvider = ({ children }) => {
     }
   };
 
-  // Refresh all data
   const refreshData = async () => {
     await Promise.all([
       fetchSystemStatus(),
@@ -307,18 +249,12 @@ export const SuperVMProvider = ({ children }) => {
     ]);
   };
 
-  // Set up polling
   useEffect(() => {
-    // Initial data fetch
     refreshData();
-    
-    // Set up polling interval
     const interval = setInterval(refreshData, state.refreshInterval);
-    
     return () => clearInterval(interval);
   }, [state.refreshInterval]);
 
-  // Context value
   const value = {
     ...state,
     actions: {
@@ -333,14 +269,9 @@ export const SuperVMProvider = ({ children }) => {
     }
   };
 
-  return (
-    <SuperVMContext.Provider value={value}>
-      {children}
-    </SuperVMContext.Provider>
-  );
+  return React.createElement(SuperVMContext.Provider, { value }, children);
 };
 
-// Custom hook to use SuperVM context
 export const useSuperVM = () => {
   const context = useContext(SuperVMContext);
   if (!context) {

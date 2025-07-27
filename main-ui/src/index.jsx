@@ -1,5 +1,10 @@
-// index.js
-//
+// index.jsx
+import React from 'react';
+import { createRoot } from 'react-dom/client';
+import App from './App.js';
+import './styles.css';
+
+// 
 // Description: Main entry point for the Super VM Dashboard React application
 //
 // This file initializes the React application and renders the main App component
@@ -18,11 +23,6 @@
 //   - React and ReactDOM
 //   - App component
 //   - Global styles
-
-import React from 'react';
-import { createRoot } from 'react-dom/client';
-import App from './App';
-import './styles.css';
 
 // Get the root element
 const container = document.getElementById('root');
