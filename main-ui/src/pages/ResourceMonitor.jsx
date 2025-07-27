@@ -46,7 +46,7 @@ import {
   TrendingDown,
   AlertTriangle
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const ResourceMonitor = () => {
   const { resourcePool, performanceMetrics } = useSuperVM();

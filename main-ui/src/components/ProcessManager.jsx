@@ -48,7 +48,7 @@ import {
   Eye,
   EyeOff
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const ProcessManager = () => {
   const { tasks, nodes, actions } = useSuperVM();

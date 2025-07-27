@@ -26,19 +26,26 @@ import { web3Config } from '../web3/index.js';
 
 // Get Aleph account from web3 configuration
 let alephAccount = null;
-try {
-    if (web3Config.wallet.hasWallet('aleph')) {
-        const alephWallet = web3Config.wallet.getWallet('aleph');
-        // Import account using the private key from web3 config
-        const { importAccountFromPrivateKey } = await import("@aleph-sdk/ethereum");
-        alephAccount = importAccountFromPrivateKey(alephWallet.privateKey);
-        console.log('Aleph account loaded successfully from web3 config');
-    } else {
-        console.warn("No Aleph wallet found in web3 configuration - using unauthenticated mode");
+
+// Initialize Aleph account asynchronously
+const initializeAlephAccount = async () => {
+    try {
+        if (web3Config.wallet.hasWallet('aleph')) {
+            const alephWallet = web3Config.wallet.getWallet('aleph');
+            // Import account using the private key from web3 config
+            const { importAccountFromPrivateKey } = await import("@aleph-sdk/ethereum");
+            alephAccount = importAccountFromPrivateKey(alephWallet.privateKey);
+            console.log('Aleph account loaded successfully from web3 config');
+        } else {
+            console.warn("No Aleph wallet found in web3 configuration - using unauthenticated mode");
+        }
+    } catch (error) {
+        console.error('Failed to load Aleph account from web3 config:', error.message);
     }
-} catch (error) {
-    console.error('Failed to load Aleph account from web3 config:', error.message);
-}
+};
+
+// Initialize account (will be called when needed)
+initializeAlephAccount();
 
 export const alephConfig = {
     // Account configuration

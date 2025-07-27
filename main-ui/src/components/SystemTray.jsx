@@ -44,7 +44,7 @@ import {
   Moon,
   MoreHorizontal
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const SystemTray = () => {
   const { 

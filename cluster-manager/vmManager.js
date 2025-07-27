@@ -31,7 +31,7 @@
 
 // cluster-manager/vmManager.js
 
-import { alephConfig } from '../config/aleph/index.js';
+import alephConfig from '../config/aleph/index.js';
 import { AuthenticatedAlephHttpClient } from '@aleph-sdk/client';
 import forge from 'node-forge';
 import axios from 'axios';

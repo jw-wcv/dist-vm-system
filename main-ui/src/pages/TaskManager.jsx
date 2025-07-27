@@ -44,7 +44,7 @@ import {
   Eye,
   Trash2
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const TaskManager = () => {
   const { tasks, actions } = useSuperVM();

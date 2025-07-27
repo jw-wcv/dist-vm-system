@@ -16,7 +16,7 @@
 import express from 'express';
 import { listVMInstances, createVMInstance } from './vmManager.js';
 import { default as Scheduler } from './distributed-scheduler.js';
-import { systemConfig } from '../config/system/index.js';
+import systemConfig from '../config/system/index.js';
 
 const app = express();
 

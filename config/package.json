@@ -1,0 +1,25 @@
+{
+  "name": "dist-vm-config",
+  "version": "1.0.0",
+  "description": "Configuration management for the distributed VM system",
+  "type": "module",
+  "main": "index.js",
+  "keywords": [
+    "configuration",
+    "distributed",
+    "vm",
+    "aleph",
+    "web3"
+  ],
+  "author": "JMWII",
+  "license": "Proprietary",
+  "dependencies": {
+    "@aleph-sdk/account": "^1.2.0",
+    "@aleph-sdk/core": "^1.6.2",
+    "@aleph-sdk/ethereum": "^1.5.0",
+    "@aleph-sdk/evm": "^1.6.2",
+    "axios": "^1.11.0",
+    "decimal.js": "^10.6.0",
+    "ethers": "^6.15.0"
+  }
+}

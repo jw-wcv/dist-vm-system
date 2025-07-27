@@ -60,7 +60,7 @@ import {
   XCircle,
   AlertCircle
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 import SystemOverview from '../components/SystemOverview';
 
 const Dashboard = () => {

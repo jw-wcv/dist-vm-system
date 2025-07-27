@@ -48,7 +48,7 @@ import {
   AlertCircle,
   MoreVertical
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const VMManager = () => {
   const { nodes, actions } = useSuperVM();

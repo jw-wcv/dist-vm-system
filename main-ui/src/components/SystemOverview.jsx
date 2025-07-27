@@ -66,7 +66,7 @@ import {
   Square,
   Pause
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const SystemOverview = () => {
   const { 

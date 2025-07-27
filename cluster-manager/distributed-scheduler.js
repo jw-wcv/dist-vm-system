@@ -26,7 +26,7 @@
 //   - Shared storage for task coordination
 
 import { listVMInstances } from './vmManager.js';
-import { alephConfig } from '../config/aleph/index.js';
+import alephConfig from '../config/aleph/index.js';
 import axios from 'axios';
 
 class DistributedScheduler {

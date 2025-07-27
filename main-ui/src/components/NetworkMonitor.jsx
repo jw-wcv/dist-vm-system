@@ -66,7 +66,7 @@ import {
   ArrowUp,
   ArrowDown
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const NetworkMonitor = () => {
   const { nodes, isConnected, actions } = useSuperVM();

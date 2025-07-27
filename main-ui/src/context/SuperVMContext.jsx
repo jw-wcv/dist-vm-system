@@ -336,4 +336,4 @@ export const SuperVMProvider = ({ children }) => {
   );
 };
 
-export { SuperVMContext, SuperVMProvider }; 
+export { SuperVMContext }; 

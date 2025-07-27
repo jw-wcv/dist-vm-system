@@ -45,7 +45,7 @@ import {
   Memory,
   HardDrive
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 
 const Sidebar = ({ isOpen, onClose }) => {
   const location = useLocation();

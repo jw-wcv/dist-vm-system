@@ -38,7 +38,7 @@ import {
   RefreshCw,
   Zap
 } from 'lucide-react';
-import { useSuperVM } from '../context/SuperVMContext';
+import { useSuperVM } from '../hooks/useSuperVM';
 import SystemTray from './SystemTray';
 
 const Header = ({ onMenuClick, theme, onThemeToggle }) => {
