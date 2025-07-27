@@ -93,10 +93,10 @@ const SystemTray = () => {
     },
     {
       name: 'Nodes',
-      status: nodes.length > 0,
+      status: (nodes || []).length > 0,
       icon: Server,
-      color: nodes.length > 0 ? 'text-blue-500' : 'text-gray-500',
-      bgColor: nodes.length > 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-gray-50 dark:bg-gray-900/20'
+      color: (nodes || []).length > 0 ? 'text-blue-500' : 'text-gray-500',
+      bgColor: (nodes || []).length > 0 ? 'bg-blue-50 dark:bg-blue-900/20' : 'bg-gray-50 dark:bg-gray-900/20'
     }
   ];
 

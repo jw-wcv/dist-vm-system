@@ -20,6 +20,7 @@ import {
 import { useSuperVM } from '../context/SuperVMContext.js';
 
 const Sidebar = ({ isOpen, onClose }) => {
+  console.log('Sidebar rendering with isOpen:', isOpen);
   const location = useLocation();
   const { 
     systemStatus, 
@@ -110,11 +111,9 @@ const Sidebar = ({ isOpen, onClose }) => {
         onClick: onClose
       })
     ),
-    React.createElement(motion.div, {
-      initial: { x: -300 },
-      animate: { x: isOpen ? 0 : -300 },
-      transition: { type: 'spring', damping: 20 },
-      className: `fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 lg:translate-x-0 lg:static lg:inset-0`
+    React.createElement('div', {
+      className: `fixed inset-y-0 left-0 z-50 w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 transform transition-transform duration-300 ease-in-out lg:translate-x-0 lg:static lg:inset-0 flex-shrink-0 sidebar-desktop`,
+      style: { transform: isOpen ? 'translateX(0)' : 'translateX(-100%)' }
     },
       React.createElement('div', { className: 'flex flex-col h-full' },
         React.createElement('div', { className: 'flex items-center justify-between p-6 border-b border-gray-200 dark:border-gray-700' },
@@ -208,7 +207,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 React.createElement('span', { className: 'text-sm text-gray-500 dark:text-gray-400' }, 'CPU')
               ),
               React.createElement('span', { className: 'text-sm font-medium text-gray-900 dark:text-white' },
-                `${resourcePool.utilization.cpu.toFixed(1)}%`
+                `${(resourcePool.utilization?.cpu || 0).toFixed(1)}%`
               )
             ),
             React.createElement('div', { className: 'flex items-center justify-between' },
@@ -217,7 +216,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 React.createElement('span', { className: 'text-sm text-gray-500 dark:text-gray-400' }, 'Memory')
               ),
               React.createElement('span', { className: 'text-sm font-medium text-gray-900 dark:text-white' },
-                `${resourcePool.utilization.memory.toFixed(1)}%`
+                `${(resourcePool.utilization?.memory || 0).toFixed(1)}%`
               )
             ),
             React.createElement('div', { className: 'flex items-center justify-between' },
@@ -226,7 +225,7 @@ const Sidebar = ({ isOpen, onClose }) => {
                 React.createElement('span', { className: 'text-sm text-gray-500 dark:text-gray-400' }, 'GPU')
               ),
               React.createElement('span', { className: 'text-sm font-medium text-gray-900 dark:text-white' },
-                `${resourcePool.utilization.gpu.toFixed(1)}%`
+                `${(resourcePool.utilization?.gpu || 0).toFixed(1)}%`
               )
             )
           )

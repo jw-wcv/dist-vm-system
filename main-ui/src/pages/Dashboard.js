@@ -35,6 +35,8 @@ import { useSuperVM } from '../context/SuperVMContext.js';
 import SystemOverview from '../components/SystemOverview.js';
 
 const Dashboard = () => {
+  console.log('Dashboard component rendering');
+  
   const { 
     resourcePool, 
     performanceMetrics, 
@@ -44,7 +46,24 @@ const Dashboard = () => {
     actions 
   } = useSuperVM();
 
+  console.log('Dashboard data:', { resourcePool, performanceMetrics, tasks, systemStatus, isConnected });
+
   const [isExecutingTask, setIsExecutingTask] = useState(false);
+
+  // Fallback for debugging - render a simple div if there are issues
+  if (!resourcePool || !performanceMetrics) {
+    console.log('Dashboard: Missing data, rendering fallback');
+    return React.createElement('div', { 
+      className: 'p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700' 
+    },
+      React.createElement('h1', { className: 'text-2xl font-bold text-gray-900 dark:text-white mb-4' }, 'Dashboard Loading...'),
+      React.createElement('p', { className: 'text-gray-500 dark:text-gray-400' }, 'Waiting for data from Super VM system...'),
+      React.createElement('div', { className: 'mt-4' },
+        React.createElement('p', { className: 'text-sm text-gray-600 dark:text-gray-500' }, `System Status: ${systemStatus || 'unknown'}`),
+        React.createElement('p', { className: 'text-sm text-gray-600 dark:text-gray-500' }, `Connected: ${isConnected ? 'Yes' : 'No'}`)
+      )
+    );
+  }
 
   // Sample data for charts (in real app, this would come from historical data)
   const resourceHistory = [
@@ -116,9 +135,9 @@ const Dashboard = () => {
     }
   };
 
-  return React.createElement('div', { className: 'space-y-6' },
+  return React.createElement('div', { className: 'space-y-6 w-full max-w-none' },
     React.createElement(SystemOverview),
-    React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6' },
+          React.createElement('div', { className: 'grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6' },
       React.createElement(motion.div, {
         initial: { opacity: 0, y: 20 },
         animate: { opacity: 1, y: 0 },
@@ -132,7 +151,7 @@ const Dashboard = () => {
           React.createElement('div', { className: 'ml-4' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'CPU Utilization'),
             React.createElement('p', { className: 'text-2xl font-bold text-gray-900 dark:text-white' },
-              `${resourcePool.utilization.cpu.toFixed(1)}%`
+              `${(resourcePool.utilization?.cpu || 0).toFixed(1)}%`
             )
           )
         )
@@ -150,7 +169,7 @@ const Dashboard = () => {
           React.createElement('div', { className: 'ml-4' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'Memory Usage'),
             React.createElement('p', { className: 'text-2xl font-bold text-gray-900 dark:text-white' },
-              `${resourcePool.utilization.memory.toFixed(1)}%`
+              `${(resourcePool.utilization?.memory || 0).toFixed(1)}%`
             )
           )
         )
@@ -168,7 +187,7 @@ const Dashboard = () => {
           React.createElement('div', { className: 'ml-4' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'GPU Usage'),
             React.createElement('p', { className: 'text-2xl font-bold text-gray-900 dark:text-white' },
-              `${resourcePool.utilization.gpu.toFixed(1)}%`
+              `${(resourcePool.utilization?.gpu || 0).toFixed(1)}%`
             )
           )
         )

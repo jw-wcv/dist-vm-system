@@ -125,6 +125,7 @@ export const SuperVMProvider = ({ children }) => {
   const [state, dispatch] = useReducer(superVMReducer, initialState);
 
   const apiCall = async (endpoint, options = {}) => {
+    console.log(`Making API call to: ${API_BASE_URL}${endpoint}`);
     dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
     dispatch({ type: ACTION_TYPES.SET_ERROR, payload: null });
     try {
@@ -133,6 +134,7 @@ export const SuperVMProvider = ({ children }) => {
         method: options.method || 'GET',
         data: options.data
       });
+      console.log(`API call successful: ${endpoint}`, response.data);
       dispatch({ type: ACTION_TYPES.SET_CONNECTION_STATUS, payload: true });
       return response.data;
     } catch (error) {
@@ -164,7 +166,7 @@ export const SuperVMProvider = ({ children }) => {
 
   const fetchPerformanceMetrics = async () => {
     try {
-      const data = await apiCall('/super-vm/performance');
+      const data = await apiCall('/super-vm/metrics');
       dispatch({ type: ACTION_TYPES.UPDATE_PERFORMANCE, payload: data });
     } catch (error) {
       dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch performance metrics' });
@@ -173,7 +175,7 @@ export const SuperVMProvider = ({ children }) => {
 
   const fetchNodes = async () => {
     try {
-      const data = await apiCall('/super-vm/nodes');
+      const data = await apiCall('/nodes');
       dispatch({ type: ACTION_TYPES.UPDATE_NODES, payload: data });
     } catch (error) {
       dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch nodes' });
@@ -182,7 +184,7 @@ export const SuperVMProvider = ({ children }) => {
 
   const fetchTasks = async () => {
     try {
-      const data = await apiCall('/super-vm/tasks');
+      const data = await apiCall('/tasks');
       dispatch({ type: ACTION_TYPES.UPDATE_TASKS, payload: data });
     } catch (error) {
       dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch tasks' });

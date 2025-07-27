@@ -33,6 +33,7 @@ class DistributedScheduler {
     constructor() {
         this.workerNodes = new Map();
         this.taskQueue = [];
+        this.activeTasks = new Map();
         this.results = new Map();
         this.resourcePool = {
             totalCPU: 0,
@@ -42,6 +43,7 @@ class DistributedScheduler {
             availableMemory: 0,
             availableGPU: 0
         };
+        this.startTime = Date.now();
     }
 
     // Initialize the distributed scheduler
@@ -386,6 +388,9 @@ class DistributedScheduler {
 
     // Get task history for UI
     getTaskHistory() {
+        if (!this.activeTasks || this.activeTasks.size === 0) {
+            return [];
+        }
         return Array.from(this.activeTasks.values()).map(task => ({
             id: task.id,
             type: task.type,
@@ -418,6 +423,9 @@ class DistributedScheduler {
 
     // Get node details for UI
     getNodeDetails() {
+        if (!this.workerNodes || this.workerNodes.size === 0) {
+            return [];
+        }
         return Array.from(this.workerNodes.values()).map(node => ({
             id: node.id,
             name: node.name,

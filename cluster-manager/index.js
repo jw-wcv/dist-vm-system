@@ -20,6 +20,20 @@ import systemConfig from '../config/system/index.js';
 
 const app = express();
 
+// CORS middleware to allow requests from the frontend
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5173');
+  res.header('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  
+  // Handle preflight requests
+  if (req.method === 'OPTIONS') {
+    res.sendStatus(200);
+  } else {
+    next();
+  }
+});
+
 // Import Super VM and scheduler
 let superVM;
 let scheduler;
@@ -192,10 +206,21 @@ app.get('/api/tasks', (req, res) => {
   }
   
   try {
-    // Get tasks from scheduler
-    const tasks = scheduler.getTaskHistory ? scheduler.getTaskHistory() : [];
-    res.json(tasks);
+    // Get tasks from scheduler with fallback
+    let tasks = [];
+    if (scheduler && typeof scheduler.getTaskHistory === 'function') {
+      tasks = scheduler.getTaskHistory();
+    }
+    
+    // Return tasks in the expected format
+    res.json({
+      tasks: tasks,
+      activeTasks: tasks.filter(t => t.status === 'running').length,
+      completedTasks: tasks.filter(t => t.status === 'completed').length,
+      failedTasks: tasks.filter(t => t.status === 'failed').length
+    });
   } catch (error) {
+    console.error('Error fetching tasks:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -224,9 +249,19 @@ app.get('/api/nodes', (req, res) => {
   }
   
   try {
-    const nodes = scheduler.getNodeDetails ? scheduler.getNodeDetails() : [];
-    res.json(nodes);
+    // Get nodes from scheduler with fallback
+    let nodes = [];
+    if (scheduler && typeof scheduler.getNodeDetails === 'function') {
+      nodes = scheduler.getNodeDetails();
+    }
+    
+    // Return nodes in the expected format
+    res.json({
+      nodes: nodes,
+      activeNodes: nodes.filter(n => n.status === 'Running').length
+    });
   } catch (error) {
+    console.error('Error fetching nodes:', error);
     res.status(500).json({ error: error.message });
   }
 });
