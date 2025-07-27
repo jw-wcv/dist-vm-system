@@ -13,15 +13,20 @@
 //   - super-vm.js (distributed computing interface)
 //   - vmManager.js (VM management)
 
-const express = require('express');
+import express from 'express';
+import { listVMInstances, createVMInstance } from './vmManager.js';
+import { default as Scheduler } from './distributed-scheduler.js';
+
 const app = express();
 
-// Import Super VM (using dynamic import for ES modules)
+// Import Super VM and scheduler
 let superVM;
+let scheduler;
 async function initializeSuperVM() {
     try {
         const { default: SuperVM } = await import('./super-vm.js');
         superVM = SuperVM;
+        scheduler = Scheduler;
         await superVM.initialize();
         console.log('Super VM initialized successfully');
     } catch (error) {
@@ -134,6 +139,109 @@ app.post('/api/super-vm/scale', async (req, res) => {
     const { nodes } = req.body;
     await superVM.scale(nodes || 1);
     res.json({ success: true, message: `Scaled by ${nodes} nodes` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// VM management endpoints
+app.get('/api/vms', async (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    const vms = await listVMInstances();
+    res.json(vms);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/vms', async (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    const newVM = await createVMInstance();
+    res.json(newVM);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/vms/:id', async (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    // In a real implementation, you would delete the VM
+    res.json({ success: true, message: `VM ${req.params.id} deleted` });
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Task management endpoints
+app.get('/api/tasks', (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    // Get tasks from scheduler
+    const tasks = scheduler.getTaskHistory ? scheduler.getTaskHistory() : [];
+    res.json(tasks);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/tasks/:id', (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    // Get specific task details
+    const task = scheduler.getTaskById ? scheduler.getTaskById(req.params.id) : null;
+    if (!task) {
+      return res.status(404).json({ error: 'Task not found' });
+    }
+    res.json(task);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Node management endpoints
+app.get('/api/nodes', (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    const nodes = scheduler.getNodeDetails ? scheduler.getNodeDetails() : [];
+    res.json(nodes);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.get('/api/nodes/:id', (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    const nodes = scheduler.getNodeDetails ? scheduler.getNodeDetails() : [];
+    const node = nodes.find(n => n.id === req.params.id);
+    if (!node) {
+      return res.status(404).json({ error: 'Node not found' });
+    }
+    res.json(node);
   } catch (error) {
     res.status(500).json({ error: error.message });
   }

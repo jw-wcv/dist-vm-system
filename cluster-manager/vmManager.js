@@ -33,9 +33,9 @@
 
 import { alephChannel, alephNodeUrl, alephImage } from './constants.js';
 import forge from 'node-forge';
-const axios = require('axios');
-const { execSync } = require('child_process');
-const fs = require('fs');
+import axios from 'axios';
+import { execSync } from 'child_process';
+import fs from 'fs';
 
 // Create SSH Key for VM Access
 export async function createSSHKey() {
@@ -86,6 +86,17 @@ export function setupWorkerVM() {
         console.log('Worker VM setup complete. Ready for workloads.');
     } catch (error) {
         console.error('Error during worker VM setup:', error.message);
+    }
+}
+
+// Get existing SSH keys
+async function getSSHKeys() {
+    try {
+        // For now, return empty array - in a real implementation, you'd read from storage
+        return [];
+    } catch (error) {
+        console.error('Error getting SSH keys:', error);
+        return [];
     }
 }
 

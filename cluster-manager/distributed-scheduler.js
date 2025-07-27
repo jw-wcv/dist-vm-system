@@ -383,6 +383,52 @@ class DistributedScheduler {
             uptime: Date.now() - this.startTime
         };
     }
+
+    // Get task history for UI
+    getTaskHistory() {
+        return Array.from(this.activeTasks.values()).map(task => ({
+            id: task.id,
+            type: task.type,
+            status: task.status,
+            startTime: task.startTime,
+            endTime: task.endTime,
+            executionTime: task.executionTime,
+            result: task.result,
+            error: task.error
+        }));
+    }
+
+    // Get specific task by ID
+    getTaskById(taskId) {
+        const task = this.activeTasks.get(taskId);
+        if (!task) return null;
+        
+        return {
+            id: task.id,
+            type: task.type,
+            status: task.status,
+            startTime: task.startTime,
+            endTime: task.endTime,
+            executionTime: task.executionTime,
+            result: task.result,
+            error: task.error,
+            data: task.data
+        };
+    }
+
+    // Get node details for UI
+    getNodeDetails() {
+        return Array.from(this.workerNodes.values()).map(node => ({
+            id: node.id,
+            name: node.name,
+            status: node.status,
+            ipv6: node.ipv6,
+            resources: node.resources,
+            currentLoad: node.currentLoad,
+            lastSeen: node.lastSeen,
+            uptime: Date.now() - node.lastSeen
+        }));
+    }
 }
 
 // Create and export singleton instance

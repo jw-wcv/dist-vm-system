@@ -216,6 +216,29 @@ export const SuperVMProvider = ({ children }) => {
     }
   };
 
+  // Fetch VM nodes
+  const fetchNodes = async () => {
+    try {
+      const data = await apiCall('/nodes');
+      dispatch({ type: ACTION_TYPES.UPDATE_NODES, payload: { nodes: data, activeNodes: data.filter(n => n.status === 'Running').length } });
+    } catch (error) {
+      console.error('Failed to fetch nodes:', error);
+    }
+  };
+
+  // Fetch tasks
+  const fetchTasks = async () => {
+    try {
+      const data = await apiCall('/tasks');
+      const activeTasks = data.filter(t => t.status === 'running').length;
+      const completedTasks = data.filter(t => t.status === 'completed').length;
+      const failedTasks = data.filter(t => t.status === 'failed').length;
+      dispatch({ type: ACTION_TYPES.UPDATE_TASKS, payload: { tasks: data, activeTasks, completedTasks, failedTasks } });
+    } catch (error) {
+      console.error('Failed to fetch tasks:', error);
+    }
+  };
+
   // Execute task
   const executeTask = async (taskType, taskData) => {
     dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
@@ -274,7 +297,9 @@ export const SuperVMProvider = ({ children }) => {
     await Promise.all([
       fetchSystemStatus(),
       fetchResourcePool(),
-      fetchPerformanceMetrics()
+      fetchPerformanceMetrics(),
+      fetchNodes(),
+      fetchTasks()
     ]);
   };
 
@@ -298,7 +323,9 @@ export const SuperVMProvider = ({ children }) => {
       refreshData,
       fetchSystemStatus,
       fetchResourcePool,
-      fetchPerformanceMetrics
+      fetchPerformanceMetrics,
+      fetchNodes,
+      fetchTasks
     }
   };
 
