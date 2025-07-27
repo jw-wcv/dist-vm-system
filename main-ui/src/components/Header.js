@@ -62,7 +62,7 @@ const Header = ({ onMenuClick, theme, onThemeToggle }) => {
             React.createElement(Zap, { className: 'w-5 h-5 text-white' })
           ),
           React.createElement('div', { className: 'hidden sm:block' },
-            React.createElement('h1', { className: 'text-xl font-bold text-gray-900 dark:text-white' }, 'Super VM'),
+            React.createElement('h1', { className: 'text-xl font-bold text-gray-900 dark:text-white' }, 'Orchestra'),
             React.createElement('p', { className: 'text-sm text-gray-500 dark:text-gray-400' }, 'Distributed Computing Dashboard')
           )
         )

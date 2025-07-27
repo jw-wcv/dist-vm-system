@@ -41,6 +41,7 @@ import {
   Square,
   Pause,
   BarChart3,
+  Download,
   PieChart as PieChartIcon,
   LineChart as LineChartIcon,
   AreaChart as AreaChartIcon
@@ -57,6 +58,20 @@ const ResourceMonitor = () => {
     nodes,
     actions 
   } = useSuperVM();
+
+  // Fallback for missing data
+  if (!resourcePool || !performanceMetrics || !nodes) {
+    return React.createElement('div', { 
+      className: 'p-6 bg-white dark:bg-gray-800 rounded-lg shadow-sm border border-gray-200 dark:border-gray-700' 
+    },
+      React.createElement('h1', { className: 'text-2xl font-bold text-gray-900 dark:text-white mb-4' }, 'Resource Monitor Loading...'),
+      React.createElement('p', { className: 'text-gray-500 dark:text-gray-400' }, 'Waiting for resource data from Super VM system...'),
+      React.createElement('div', { className: 'mt-4' },
+        React.createElement('p', { className: 'text-sm text-gray-600 dark:text-gray-500' }, `System Status: ${systemStatus || 'unknown'}`),
+        React.createElement('p', { className: 'text-sm text-gray-600 dark:text-gray-500' }, `Connected: ${isConnected ? 'Yes' : 'No'}`)
+      )
+    );
+  }
 
   const [selectedTimeRange, setSelectedTimeRange] = useState('1h');
   const [selectedResource, setSelectedResource] = useState('cpu');
@@ -247,7 +262,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'ml-3' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'CPU Usage'),
             React.createElement('p', { className: 'text-lg font-bold text-gray-900 dark:text-white' },
-              `${resourceMetrics.cpu.current.toFixed(1)}%`
+              `${(resourceMetrics.cpu?.current || 0).toFixed(1)}%`
             )
           )
         ),
@@ -255,7 +270,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2' },
             React.createElement('div', {
               className: 'bg-blue-600 h-2 rounded-full transition-all duration-300',
-              style: { width: `${resourceMetrics.cpu.current}%` }
+              style: { width: `${resourceMetrics.cpu?.current || 0}%` }
             })
           )
         )
@@ -268,7 +283,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'ml-3' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'Memory Usage'),
             React.createElement('p', { className: 'text-lg font-bold text-gray-900 dark:text-white' },
-              `${resourceMetrics.memory.current.toFixed(1)}%`
+              `${(resourceMetrics.memory?.current || 0).toFixed(1)}%`
             )
           )
         ),
@@ -276,7 +291,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2' },
             React.createElement('div', {
               className: 'bg-green-600 h-2 rounded-full transition-all duration-300',
-              style: { width: `${resourceMetrics.memory.current}%` }
+              style: { width: `${resourceMetrics.memory?.current || 0}%` }
             })
           )
         )
@@ -289,7 +304,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'ml-3' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'GPU Usage'),
             React.createElement('p', { className: 'text-lg font-bold text-gray-900 dark:text-white' },
-              `${resourceMetrics.gpu.current.toFixed(1)}%`
+              `${(resourceMetrics.gpu?.current || 0).toFixed(1)}%`
             )
           )
         ),
@@ -297,7 +312,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2' },
             React.createElement('div', {
               className: 'bg-purple-600 h-2 rounded-full transition-all duration-300',
-              style: { width: `${resourceMetrics.gpu.current}%` }
+              style: { width: `${resourceMetrics.gpu?.current || 0}%` }
             })
           )
         )
@@ -310,7 +325,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'ml-3' },
             React.createElement('p', { className: 'text-sm font-medium text-gray-500 dark:text-gray-400' }, 'Network'),
             React.createElement('p', { className: 'text-lg font-bold text-gray-900 dark:text-white' },
-              `${resourceMetrics.network.bandwidth.toFixed(1)}%`
+              `${(resourceMetrics.network?.bandwidth || 0).toFixed(1)}%`
             )
           )
         ),
@@ -318,7 +333,7 @@ const ResourceMonitor = () => {
           React.createElement('div', { className: 'w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2' },
             React.createElement('div', {
               className: 'bg-orange-600 h-2 rounded-full transition-all duration-300',
-              style: { width: `${resourceMetrics.network.bandwidth}%` }
+              style: { width: `${resourceMetrics.network?.bandwidth || 0}%` }
             })
           )
         )
@@ -335,7 +350,7 @@ const ResourceMonitor = () => {
               cy: '50%',
               outerRadius: 80,
               dataKey: 'value',
-              label: ({ name, value }) => `${name}: ${value.toFixed(1)}%`
+              label: ({ name, value }) => `${name}: ${(value || 0).toFixed(1)}%`
             },
               resourceDistribution.map((entry, index) => 
                 React.createElement(Cell, { key: `cell-${index}`, fill: entry.color })
@@ -424,7 +439,7 @@ const ResourceMonitor = () => {
           ),
           React.createElement('div', { className: 'flex items-center justify-between' },
             React.createElement('span', { className: 'text-sm text-gray-500 dark:text-gray-400' }, 'Average Execution'),
-            React.createElement('span', { className: 'text-sm font-medium text-gray-900 dark:text-white' }, `${performanceMetrics.averageExecutionTime.toFixed(1)}ms`)
+            React.createElement('span', { className: 'text-sm font-medium text-gray-900 dark:text-white' }, `${(performanceMetrics.averageExecutionTime || 0).toFixed(1)}ms`)
           )
         )
       )
