@@ -1,21 +1,41 @@
 {
-    "name": "aleph-main-ui",
-    "version": "1.0.0",
-    "description": "Aleph distributed compute frontend and cluster manager",
-    "scripts": {
-      "start": "vite",
-      "build": "vite build",
-      "test": "echo \"No tests specified\" && exit 0"
-    },
-    "dependencies": {
-      "@aleph-sdk/client": "^0.4.0",
-      "@aleph-sdk/ethereum": "^0.4.0",
-      "forge": "^1.0.0",
-      "react": "^18.0.0",
-      "react-dom": "^18.0.0"
-    },
-    "devDependencies": {
-      "vite": "^4.0.0"
-    }
+  "name": "super-vm-dashboard",
+  "version": "1.0.0",
+  "description": "Super VM Dashboard - Unified interface for distributed VM management",
+  "main": "src/index.js",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "electron-dev": "concurrently \"npm run dev\" \"wait-on http://localhost:5173 && electron .\""
+  },
+  "dependencies": {
+    "@aleph-sdk/client": "^0.4.0",
+    "@aleph-sdk/ethereum": "^0.4.0",
+    "forge": "^1.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "axios": "^1.6.0",
+    "recharts": "^2.8.0",
+    "react-router-dom": "^6.8.0",
+    "lucide-react": "^0.263.1",
+    "clsx": "^2.0.0",
+    "tailwindcss": "^3.3.0",
+    "autoprefixer": "^10.4.14",
+    "postcss": "^8.4.24",
+    "framer-motion": "^10.16.4",
+    "react-hot-toast": "^2.4.1",
+    "date-fns": "^2.30.0"
+  },
+  "devDependencies": {
+    "vite": "^4.3.0",
+    "@vitejs/plugin-react": "^4.0.0",
+    "electron": "^27.0.0",
+    "concurrently": "^8.2.0",
+    "wait-on": "^7.0.1",
+    "@types/react": "^18.2.0",
+    "@types/react-dom": "^18.2.0"
   }
+}
   
