@@ -2,7 +2,7 @@
 
 #
 
-# Description: Main project documentation for the Distributed VM System
+# Description: Main project documentation for the Distributed VM System with Super VM
 
 #
 
@@ -12,23 +12,280 @@
 
 # The system enables distributed computing across multiple virtual machines with
 
-# centralized orchestration and management capabilities.
+# centralized orchestration and management capabilities, creating a unified Super VM.
 
-# Distributed VM System
+# Distributed VM System with Super VM
 
-This project provides a distributed compute framework utilizing multiple VMs orchestrated through a central GUI. The system allows distributed processing of workloads, task delegation, and filesystem synchronization across VMs.
+This project provides a distributed compute framework that creates a unified "Super VM" by aggregating resources from multiple VMs orchestrated through a central system. The Super VM appears as a single powerful machine while distributing workloads across multiple nodes for maximum performance.
 
-## Features
+## 🚀 Super VM Features
 
-- Distributed task execution across worker VMs.
-- Unified GUI interface using Electron.
-- Kubernetes and Terraform-based orchestration.
-- GPU passthrough for compute-intensive tasks.
+### **Unified Computing Interface**
 
-## Setup
+- **Aggregated Resources**: Combines CPU, memory, and GPU from multiple VMs
+- **Single API**: Use the Super VM like a single powerful machine
+- **Automatic Load Balancing**: Distributes tasks across available nodes
+- **Fault Tolerance**: Continues operation even if individual nodes fail
+
+### **Distributed Computing Capabilities**
+
+- **3D Rendering**: Distribute Blender rendering across multiple nodes
+- **Data Processing**: Parallel processing of large datasets
+- **Browser Automation**: Scalable web automation and testing
+- **File Synchronization**: Coordinated file management across nodes
+
+### **Smart Resource Management**
+
+- **Dynamic Scaling**: Add/remove nodes on demand
+- **Resource Monitoring**: Real-time performance metrics
+- **Intelligent Scheduling**: Optimizes task distribution for efficiency
+- **Health Monitoring**: Automatic node health checks and recovery
+
+## 🏗️ Architecture
+
+```
+┌─────────────────┐    ┌─────────────────┐    ┌─────────────────┐
+│   Super VM      │    │   Worker VM 1   │    │   Worker VM 2   │
+│   Interface     │◄──►│   (4 vCPU)      │    │   (4 vCPU)      │
+│                 │    │   (8GB RAM)     │    │   (8GB RAM)     │
+└─────────────────┘    └─────────────────┘    └─────────────────┘
+         │                       │                       │
+         │              ┌─────────────────┐              │
+         └──────────────►│   Worker VM 3   │◄─────────────┘
+                        │   (4 vCPU)      │
+                        │   (8GB RAM)     │
+                        └─────────────────┘
+```
+
+**Result**: 12 vCPU, 24GB RAM Super VM from 3 individual VMs
+
+## 🛠️ Setup
+
+### Prerequisites
+
+- Node.js (v16 or higher)
+- Docker
+- Internet connectivity
+- Aleph network access
+
+### Quick Start
 
 1. Clone the repository:
 
 ```bash
 git clone https://github.com/jw-wcv/dist-vm-system.git
+cd dist-vm-system
 ```
+
+2. Start the Super VM system:
+
+```bash
+./cluster-manager/start-super-vm.sh
+```
+
+3. The system will automatically:
+   - Check prerequisites
+   - Build Docker images
+   - Create VMs on Aleph network
+   - Initialize the Super VM
+   - Start the cluster manager
+
+## 📊 Usage Examples
+
+### Check Super VM Status
+
+```bash
+curl http://localhost:3000/api/super-vm/status
+```
+
+### Distributed 3D Rendering
+
+```bash
+curl -X POST http://localhost:3000/api/super-vm/render \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "sceneFile": "/path/to/scene.blend",
+    "frameStart": 1,
+    "frameEnd": 100,
+    "options": {
+      "quality": "high",
+      "resolution": "1920x1080"
+    }
+  }'
+```
+
+### Large-scale Data Processing
+
+```bash
+curl -X POST http://localhost:3000/api/super-vm/process \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "inputData": [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
+    "operation": "sort",
+    "parameters": {
+      "cpu": 2,
+      "memory": 2048
+    }
+  }'
+```
+
+### Scale the System
+
+```bash
+curl -X POST http://localhost:3000/api/super-vm/scale \
+  -H 'Content-Type: application/json' \
+  -d '{"nodes": 2}'
+```
+
+## 🔧 API Endpoints
+
+| Endpoint                  | Method | Description                    |
+| ------------------------- | ------ | ------------------------------ |
+| `/api/super-vm/status`    | GET    | Get Super VM status and health |
+| `/api/super-vm/resources` | GET    | Get aggregated resource pool   |
+| `/api/super-vm/metrics`   | GET    | Get performance metrics        |
+| `/api/super-vm/render`    | POST   | Execute distributed rendering  |
+| `/api/super-vm/process`   | POST   | Process data in parallel       |
+| `/api/super-vm/browser`   | POST   | Execute browser automation     |
+| `/api/super-vm/sync`      | POST   | Synchronize files across nodes |
+| `/api/super-vm/scale`     | POST   | Scale the system up/down       |
+
+## 🎯 Use Cases
+
+### **3D Animation Studios**
+
+- Render complex scenes across multiple nodes
+- Reduce render times from hours to minutes
+- Scale up during crunch times
+
+### **Data Science Teams**
+
+- Process large datasets in parallel
+- Run machine learning training across nodes
+- Handle big data analytics workloads
+
+### **Web Development**
+
+- Parallel browser testing
+- Load testing across multiple instances
+- Automated screenshot generation
+
+### **Research Institutions**
+
+- Distributed scientific computing
+- Parallel simulation runs
+- Large-scale data analysis
+
+## 📈 Performance Benefits
+
+### **Scalability**
+
+- **Linear Scaling**: Add nodes for proportional performance increase
+- **Auto-scaling**: Automatically add nodes during high load
+- **Cost Optimization**: Scale down during low usage
+
+### **Reliability**
+
+- **Fault Tolerance**: Continue operation if nodes fail
+- **Health Monitoring**: Automatic detection and recovery
+- **Load Balancing**: Distribute work evenly across nodes
+
+### **Efficiency**
+
+- **Resource Aggregation**: Combine resources from multiple VMs
+- **Task Optimization**: Intelligent task distribution
+- **Performance Metrics**: Real-time monitoring and optimization
+
+## 🔍 Monitoring
+
+### Real-time Dashboard
+
+Access the Super VM dashboard at `http://localhost:3000` to monitor:
+
+- Resource utilization across all nodes
+- Active tasks and their progress
+- Performance metrics and efficiency
+- Node health and status
+
+### Metrics Available
+
+- **CPU Utilization**: Per node and aggregated
+- **Memory Usage**: Current and peak usage
+- **Task Execution**: Success rates and timing
+- **System Efficiency**: Overall performance metrics
+
+## 🚀 Advanced Features
+
+### **GPU Passthrough**
+
+Enable GPU acceleration for compute-intensive tasks:
+
+```bash
+# Setup GPU passthrough on worker nodes
+./worker-vm-setup/GPU-passthrough/setup-gpu.sh
+```
+
+### **Custom Task Types**
+
+Extend the system with custom task types:
+
+- Add new processing algorithms
+- Implement specialized rendering pipelines
+- Create custom automation workflows
+
+### **Integration APIs**
+
+Integrate with existing systems:
+
+- CI/CD pipelines
+- Data processing workflows
+- Monitoring systems
+
+## 🛡️ Security
+
+- **SSH Key Management**: Secure access to worker nodes
+- **Network Isolation**: VMs communicate over secure channels
+- **Resource Limits**: Prevent resource exhaustion
+- **Access Control**: API authentication and authorization
+
+## 📝 Configuration
+
+### Environment Variables
+
+```bash
+export ALEPH_NODE_URL="https://your-aleph-node.com"
+export ALEPH_CHANNEL="your-channel"
+export WORKER_PORT=8080
+export NODE_ID="worker-001"
+```
+
+### Customization
+
+- Modify `cluster-manager/constants.js` for Aleph configuration
+- Update `cluster-manager/ansible/` for VM setup automation
+- Customize `distributed-apps/` for specific application needs
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under a proprietary license. See [LICENSE](LICENSE) for details.
+
+## 🆘 Support
+
+For support and questions:
+
+- Check the API documentation
+- Review the example scripts
+- Monitor system logs for debugging
+- Open an issue on GitHub
+
+---
+
+**Transform your distributed VMs into a unified Super VM for maximum computing power!** 🚀
