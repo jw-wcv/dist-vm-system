@@ -1,3 +1,27 @@
+# service.yaml
+#
+# Description: Kubernetes service configuration for distributed compute workers
+#
+# This file defines a Kubernetes service that provides network access to the
+# distributed compute worker pods. It enables load balancing and service
+# discovery for the compute workloads.
+#
+# Configuration:
+#   - Service name: compute-service
+#   - Selector: app=compute-node (matches deployment labels)
+#   - Port mapping: External port 80 -> Container port 8080
+#   - Protocol: TCP
+#
+# Inputs: None (uses default Kubernetes configuration)
+# Outputs:
+#   - Load-balanced access to compute worker pods
+#   - Service discovery via compute-service name
+#   - Network abstraction for pod communication
+#
+# Dependencies:
+#   - deployment.yaml (for compute-node pods)
+#   - ingress.yaml (for external access)
+
 apiVersion: v1
 kind: Service
 metadata:

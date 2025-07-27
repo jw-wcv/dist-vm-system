@@ -1,4 +1,35 @@
 // vmManager.js
+// 
+// Description: Virtual Machine management module for the main UI application
+// 
+// This module provides the frontend VM management functionality for the distributed
+// VM system. It handles SSH key generation, VM creation, listing, and management
+// through the Aleph network, with user-friendly UI interactions and modal dialogs.
+// 
+// Functions:
+//   - createSSHKey(): Generates and uploads SSH key pairs for VM access
+//     Inputs: User prompt for key label
+//     Outputs: Private key download, public key uploaded to Aleph
+// 
+//   - createVMInstance(): Creates a new VM instance on Aleph network
+//     Inputs: User prompt for VM name, existing SSH keys
+//     Outputs: New VM instance with specified configuration
+// 
+//   - listVMInstances(): Lists all VM instances owned by the user
+//     Inputs: None
+//     Outputs: Array of VM objects with id, name, ipv6, and status
+// 
+// Features:
+//   - Modal dialogs for user feedback
+//   - Automatic private key download
+//   - Real-time status updates
+//   - Error handling with user alerts
+// 
+// Dependencies: 
+//   - constants.js (Aleph configuration)
+//   - client.js (Aleph client setup)
+//   - node-forge (cryptography)
+//   - Modal components (UI feedback)
 
 import { alephChannel, alephNodeUrl, alephImage } from './constants.js';
 import { account, alephClient, getOrInitializeAlephClient } from './client.js';

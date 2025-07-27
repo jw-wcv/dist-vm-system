@@ -1,3 +1,15 @@
+// index.js
+// 
+// Description: Main entry point for the cluster manager API server
+// 
+// This file sets up an Express.js server that provides REST API endpoints
+// for cluster management and monitoring functionality.
+// 
+// Inputs: HTTP GET requests to /api/status
+// Outputs: JSON responses with cluster status information
+// 
+// Dependencies: express (Node.js web framework)
+
 const express = require('express');
 const app = express();
 

@@ -1,3 +1,25 @@
+# docker-setup.yml
+#
+# Description: Ansible playbook for Docker environment setup on worker VMs
+#
+# This playbook focuses specifically on Docker installation and configuration
+# for worker nodes in the distributed VM system. It ensures Docker is properly
+# installed, started, and configured with the necessary images.
+#
+# Inputs:
+#   - Target hosts: workers (defined in inventory)
+#   - Docker image: aleph/node
+# Outputs:
+#   - Docker installed and running on worker nodes
+#   - Docker service enabled for auto-start
+#   - Aleph node Docker image pulled and available
+#
+# Prerequisites:
+#   - Ansible inventory with 'workers' group defined
+#   - SSH access to worker nodes
+#   - sudo privileges on worker nodes
+#   - Internet connectivity for Docker image pulls
+
 ---
 - name: Setup Docker Environment on Worker VMs
   hosts: workers

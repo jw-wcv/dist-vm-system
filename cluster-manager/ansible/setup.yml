@@ -1,3 +1,26 @@
+# setup.yml
+#
+# Description: Main setup playbook for worker VMs in the distributed system
+#
+# This is the primary Ansible playbook for initializing worker nodes in the
+# distributed VM system. It performs the core setup tasks including Docker
+# installation, repository cloning, and VM creation using KVM.
+#
+# Inputs:
+#   - Target hosts: workers (defined in inventory)
+#   - Repository URL: https://github.com/jw-wcv/dist-vm-system.git
+# Outputs:
+#   - Docker installed on worker nodes
+#   - Repository cloned to ~/distributed-compute directory
+#   - New VM created with KVM (4 vCPUs, 8GB RAM, 80GB disk)
+#
+# Prerequisites:
+#   - Ansible inventory with 'workers' group defined
+#   - SSH access to worker nodes
+#   - KVM/QEMU available on worker nodes
+#   - sudo privileges on worker nodes
+#   - Internet connectivity for package installation and git cloning
+
 - name: Setup Worker VMs
   hosts: workers
   tasks:
@@ -8,7 +31,7 @@
 
     - name: Clone Distributed Compute Repo
       git:
-        repo: 'https://github.com/jw-wcv/dist-vm-system.git'
+        repo: "https://github.com/jw-wcv/dist-vm-system.git"
         dest: ~/distributed-compute
 
     - name: Create VM using KVM

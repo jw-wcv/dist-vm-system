@@ -1,14 +1,34 @@
+# README
+
+#
+
+# Description: Main project documentation for the Distributed VM System
+
+#
+
+# This file serves as the primary documentation for the distributed VM system project,
+
+# providing an overview of features, setup instructions, and usage guidelines.
+
+# The system enables distributed computing across multiple virtual machines with
+
+# centralized orchestration and management capabilities.
+
 # Distributed VM System
 
 This project provides a distributed compute framework utilizing multiple VMs orchestrated through a central GUI. The system allows distributed processing of workloads, task delegation, and filesystem synchronization across VMs.
 
 ## Features
+
 - Distributed task execution across worker VMs.
 - Unified GUI interface using Electron.
 - Kubernetes and Terraform-based orchestration.
 - GPU passthrough for compute-intensive tasks.
 
 ## Setup
+
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/jw-wcv/dist-vm-system.git
+```

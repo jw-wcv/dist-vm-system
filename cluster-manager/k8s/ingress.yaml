@@ -1,16 +1,42 @@
+# ingress.yaml
+#
+# Description: Kubernetes ingress configuration for external access to compute service
+#
+# This file defines a Kubernetes ingress resource that provides external HTTP
+# access to the distributed compute service. It routes traffic from the domain
+# to the internal compute service.
+#
+# Configuration:
+#   - Ingress name: compute-ingress
+#   - Host: compute.example.com (external domain)
+#   - Path: / (root path routing)
+#   - Backend: compute-service on port 80
+#   - Path type: Prefix (matches all paths starting with /)
+#
+# Inputs: None (uses default Kubernetes configuration)
+# Outputs:
+#   - External HTTP access to compute service
+#   - Domain-based routing (compute.example.com)
+#   - SSL termination capability (if configured)
+#
+# Prerequisites:
+#   - Ingress controller installed in cluster
+#   - DNS configured for compute.example.com
+#   - service.yaml (for backend service)
+
 apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: compute-ingress
 spec:
   rules:
-  - host: compute.example.com
-    http:
-      paths:
-      - path: /
-        pathType: Prefix
-        backend:
-          service:
-            name: compute-service
-            port:
-              number: 80
+    - host: compute.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: compute-service
+                port:
+                  number: 80

@@ -1,3 +1,24 @@
+# full-automation.yml
+#
+# Description: Complete automation playbook for worker VM setup and creation
+#
+# This Ansible playbook provides end-to-end automation for setting up worker VMs
+# in the distributed VM system. It combines system preparation, Docker installation,
+# and VM creation into a single automated workflow.
+#
+# Inputs: None (uses localhost as target)
+# Outputs:
+#   - Docker installed and configured
+#   - Aleph node image pulled
+#   - Repository cloned
+#   - New VM created with specified configuration
+#
+# Prerequisites:
+#   - Ansible installed
+#   - KVM/QEMU available
+#   - virt-install command available
+#   - sudo privileges
+
 ---
 - name: Full Automation for Worker VM Setup
   hosts: localhost

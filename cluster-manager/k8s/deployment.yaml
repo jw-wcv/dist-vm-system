@@ -1,3 +1,28 @@
+# deployment.yaml
+#
+# Description: Kubernetes deployment configuration for distributed compute workers
+#
+# This file defines a Kubernetes deployment that manages distributed compute
+# worker pods in the cluster. It ensures high availability and scalability
+# for the distributed processing workloads.
+#
+# Configuration:
+#   - Deployment name: distributed-compute
+#   - Replicas: 3 (ensures 3 worker pods are always running)
+#   - Container: compute-worker using distributed-compute:latest image
+#   - Selector: app=compute-node (for service discovery)
+#
+# Inputs: None (uses default Kubernetes configuration)
+# Outputs:
+#   - 3 running compute worker pods
+#   - Automatic pod replacement on failure
+#   - Load balancing through associated service
+#
+# Dependencies:
+#   - Kubernetes cluster
+#   - distributed-compute:latest Docker image
+#   - service.yaml (for network access)
+
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -13,5 +38,5 @@ spec:
         app: compute-node
     spec:
       containers:
-      - name: compute-worker
-        image: distributed-compute:latest
+        - name: compute-worker
+          image: distributed-compute:latest
