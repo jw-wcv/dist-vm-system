@@ -48,7 +48,7 @@ import {
 } from 'recharts';
 import { 
   Cpu, 
-  Memory, 
+  Database, 
   HardDrive, 
   Activity, 
   Play, 
@@ -179,7 +179,7 @@ const Dashboard = () => {
         >
           <div className="flex items-center">
             <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <Memory className="w-6 h-6 text-green-600" />
+                              <Database className="w-6 h-6 text-green-600" />
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-500 dark:text-gray-400">Memory Usage</p>

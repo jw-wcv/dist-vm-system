@@ -100,63 +100,73 @@ const superVMReducer = (state, action) => {
   switch (action.type) {
     case ACTION_TYPES.SET_LOADING:
       return { ...state, isLoading: action.payload };
-      
+    
     case ACTION_TYPES.SET_ERROR:
       return { ...state, error: action.payload, isLoading: false };
-      
+    
     case ACTION_TYPES.UPDATE_SYSTEM_STATUS:
       return { 
         ...state, 
         systemStatus: action.payload.status,
+        isConnected: action.payload.isConnected,
         lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.UPDATE_RESOURCE_POOL:
       return { 
         ...state, 
-        resourcePool: { ...state.resourcePool, ...action.payload }
+        resourcePool: { ...action.payload },
+        lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.UPDATE_NODES:
       return { 
         ...state, 
         nodes: action.payload.nodes,
-        activeNodes: action.payload.activeNodes
+        activeNodes: action.payload.activeNodes,
+        lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.UPDATE_TASKS:
       return { 
         ...state, 
         tasks: action.payload.tasks,
         activeTasks: action.payload.activeTasks,
         completedTasks: action.payload.completedTasks,
-        failedTasks: action.payload.failedTasks
+        failedTasks: action.payload.failedTasks,
+        lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.UPDATE_PERFORMANCE:
       return { 
         ...state, 
-        performanceMetrics: { ...state.performanceMetrics, ...action.payload }
+        performanceMetrics: { ...action.payload },
+        lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.ADD_TASK:
       return { 
         ...state, 
         tasks: [...state.tasks, action.payload],
-        activeTasks: state.activeTasks + 1
+        lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.UPDATE_TASK:
-      return {
-        ...state,
+      return { 
+        ...state, 
         tasks: state.tasks.map(task => 
           task.id === action.payload.id ? { ...task, ...action.payload } : task
-        )
+        ),
+        lastUpdate: new Date().toISOString()
       };
-      
+    
     case ACTION_TYPES.SET_CONNECTION_STATUS:
-      return { ...state, isConnected: action.payload };
-      
+      return { 
+        ...state, 
+        isConnected: action.payload,
+        lastUpdate: new Date().toISOString()
+      };
+    
     default:
       return state;
   }
@@ -169,7 +179,7 @@ const SuperVMContext = createContext();
 export const SuperVMProvider = ({ children }) => {
   const [state, dispatch] = useReducer(superVMReducer, initialState);
 
-  // API helper functions
+  // API call helper
   const apiCall = async (endpoint, options = {}) => {
     try {
       const response = await axios({
@@ -189,10 +199,8 @@ export const SuperVMProvider = ({ children }) => {
     try {
       const data = await apiCall('/super-vm/status');
       dispatch({ type: ACTION_TYPES.UPDATE_SYSTEM_STATUS, payload: data });
-      dispatch({ type: ACTION_TYPES.SET_CONNECTION_STATUS, payload: true });
     } catch (error) {
-      dispatch({ type: ACTION_TYPES.SET_CONNECTION_STATUS, payload: false });
-      dispatch({ type: ACTION_TYPES.SET_ERROR, payload: 'Failed to fetch system status' });
+      dispatch({ type: ACTION_TYPES.SET_ERROR, payload: error.message });
     }
   };
 
@@ -209,18 +217,18 @@ export const SuperVMProvider = ({ children }) => {
   // Fetch performance metrics
   const fetchPerformanceMetrics = async () => {
     try {
-      const data = await apiCall('/super-vm/metrics');
+      const data = await apiCall('/super-vm/performance');
       dispatch({ type: ACTION_TYPES.UPDATE_PERFORMANCE, payload: data });
     } catch (error) {
       console.error('Failed to fetch performance metrics:', error);
     }
   };
 
-  // Fetch VM nodes
+  // Fetch nodes
   const fetchNodes = async () => {
     try {
-      const data = await apiCall('/nodes');
-      dispatch({ type: ACTION_TYPES.UPDATE_NODES, payload: { nodes: data, activeNodes: data.filter(n => n.status === 'Running').length } });
+      const data = await apiCall('/super-vm/nodes');
+      dispatch({ type: ACTION_TYPES.UPDATE_NODES, payload: data });
     } catch (error) {
       console.error('Failed to fetch nodes:', error);
     }
@@ -229,11 +237,8 @@ export const SuperVMProvider = ({ children }) => {
   // Fetch tasks
   const fetchTasks = async () => {
     try {
-      const data = await apiCall('/tasks');
-      const activeTasks = data.filter(t => t.status === 'running').length;
-      const completedTasks = data.filter(t => t.status === 'completed').length;
-      const failedTasks = data.filter(t => t.status === 'failed').length;
-      dispatch({ type: ACTION_TYPES.UPDATE_TASKS, payload: { tasks: data, activeTasks, completedTasks, failedTasks } });
+      const data = await apiCall('/super-vm/tasks');
+      dispatch({ type: ACTION_TYPES.UPDATE_TASKS, payload: data });
     } catch (error) {
       console.error('Failed to fetch tasks:', error);
     }
@@ -244,10 +249,9 @@ export const SuperVMProvider = ({ children }) => {
     dispatch({ type: ACTION_TYPES.SET_LOADING, payload: true });
     
     try {
-      const endpoint = `/super-vm/${taskType}`;
-      const result = await apiCall(endpoint, {
+      const result = await apiCall('/super-vm/execute-task', {
         method: 'POST',
-        data: taskData
+        data: { taskType, taskData }
       });
       
       // Add task to list
@@ -334,6 +338,15 @@ export const SuperVMProvider = ({ children }) => {
       {children}
     </SuperVMContext.Provider>
   );
+};
+
+// Custom hook to use SuperVM context
+export const useSuperVM = () => {
+  const context = useContext(SuperVMContext);
+  if (!context) {
+    throw new Error('useSuperVM must be used within a SuperVMProvider');
+  }
+  return context;
 };
 
 export { SuperVMContext }; 

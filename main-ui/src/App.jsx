@@ -46,7 +46,7 @@ import LoadingSpinner from './components/LoadingSpinner';
 import { SuperVMProvider } from './context/SuperVMContext';
 
 // Hooks
-import { useSuperVM } from './hooks/useSuperVM';
+import { useSuperVM } from './context/SuperVMContext';
 
 // Styles
 import './styles.css';

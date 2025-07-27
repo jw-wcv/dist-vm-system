@@ -42,7 +42,7 @@ import {
   Minus,
   Zap,
   Cpu,
-  Memory,
+  Database,
   HardDrive
 } from 'lucide-react';
 import { useSuperVM } from '../hooks/useSuperVM';
@@ -85,7 +85,7 @@ const Sidebar = ({ isOpen, onClose }) => {
     {
       name: 'Resource Monitor',
       href: '/resource-monitor',
-      icon: Memory,
+      icon: Database,
       description: 'Real-time resource monitoring'
     },
     {
@@ -266,7 +266,7 @@ const Sidebar = ({ isOpen, onClose }) => {
               
               <div className="flex items-center justify-between">
                 <div className="flex items-center">
-                  <Memory className="w-4 h-4 text-gray-400 mr-2" />
+                  <Database className="w-4 h-4 text-gray-400 mr-2" />
                   <span className="text-sm text-gray-500 dark:text-gray-400">Memory</span>
                 </div>
                 <span className="text-sm font-medium text-gray-900 dark:text-white">

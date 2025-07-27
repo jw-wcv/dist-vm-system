@@ -39,7 +39,7 @@ import {
 } from 'recharts';
 import { 
   Cpu, 
-  Memory, 
+  Database, 
   HardDrive, 
   Activity,
   TrendingUp,
@@ -114,7 +114,7 @@ const ResourceMonitor = () => {
               </p>
             </div>
             <div className="p-2 bg-green-50 dark:bg-green-900/20 rounded-lg">
-              <Memory className="w-6 h-6 text-green-600" />
+                              <Database className="w-6 h-6 text-green-600" />
             </div>
           </div>
           <div className="mt-4">

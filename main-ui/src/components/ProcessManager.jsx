@@ -35,7 +35,7 @@ import {
   Filter,
   MoreVertical,
   Cpu,
-  Memory,
+  Database,
   HardDrive,
   Network,
   Clock,
@@ -463,7 +463,7 @@ const ProcessManager = () => {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex items-center">
-                      <Memory className="w-4 h-4 text-green-600 mr-2" />
+                      <Database className="w-4 h-4 text-green-600 mr-2" />
                       <span className="text-sm text-gray-900 dark:text-white">
                         {(process.memory / 1024).toFixed(1)}GB
                       </span>

@@ -36,7 +36,7 @@ import {
   Square, 
   RefreshCw,
   Cpu,
-  Memory,
+  Database,
   HardDrive,
   Wifi,
   WifiOff,
@@ -426,7 +426,7 @@ const VMManager = () => {
                           <span>{vm.cpu.cores} cores ({vm.cpu.usage}%)</span>
                         </div>
                         <div className="flex items-center">
-                          <Memory className="w-4 h-4 text-green-500 mr-1" />
+                          <Database className="w-4 h-4 text-green-500 mr-1" />
                           <span>{Math.round(vm.memory.used / 1024)}/{Math.round(vm.memory.total / 1024)} GB</span>
                         </div>
                         {vm.gpu.count > 0 && (

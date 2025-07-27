@@ -24,13 +24,23 @@
 
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
+import { resolve } from 'path';
 
 export default defineConfig({
     plugins: [react()],
+    root: resolve(__dirname, '.'),
+    publicDir: 'public',
     server: {
         port: 5173,
+        host: true,
+        open: true,
     },
     build: {
         outDir: 'dist',
     },
+    preview: {
+        port: 5173,
+        host: true,
+    },
+    appType: 'spa',
 });

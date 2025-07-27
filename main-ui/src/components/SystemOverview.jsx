@@ -44,7 +44,7 @@ import {
 } from 'recharts';
 import { 
   Cpu, 
-  Memory, 
+  Database, 
   HardDrive, 
   Activity, 
   Server, 
@@ -56,7 +56,7 @@ import {
   AlertCircle,
   Wifi,
   WifiOff,
-  Database,
+  Database as DatabaseIcon,
   Network,
   Shield,
   Settings,
