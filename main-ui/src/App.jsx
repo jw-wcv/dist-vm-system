@@ -38,6 +38,8 @@ import VMManager from './pages/VMManager';
 import TaskManager from './pages/TaskManager';
 import ResourceMonitor from './pages/ResourceMonitor';
 import Settings from './pages/Settings';
+import ProcessManager from './components/ProcessManager';
+import NetworkMonitor from './components/NetworkMonitor';
 import LoadingSpinner from './components/LoadingSpinner';
 
 // Context
@@ -104,9 +106,11 @@ const App = () => {
                 <Routes>
                   <Route path="/" element={<Navigate to="/dashboard" replace />} />
                   <Route path="/dashboard" element={<Dashboard />} />
+                  <Route path="/process-manager" element={<ProcessManager />} />
                   <Route path="/vm-manager" element={<VMManager />} />
-                  <Route path="/task-manager" element={<TaskManager />} />
+                  <Route path="/network-monitor" element={<NetworkMonitor />} />
                   <Route path="/resource-monitor" element={<ResourceMonitor />} />
+                  <Route path="/task-manager" element={<TaskManager />} />
                   <Route path="/settings" element={<Settings />} />
                 </Routes>
               </AnimatePresence>

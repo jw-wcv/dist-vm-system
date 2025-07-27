@@ -1,0 +1,22 @@
+{
+  "name": "dist-vm-keys",
+  "version": "1.0.0",
+  "description": "SSH Key Management for Distributed VM System",
+  "type": "module",
+  "main": "keyManager.js",
+  "scripts": {
+    "list": "node manage-keys.js list",
+    "generate": "node manage-keys.js generate",
+    "validate": "node manage-keys.js validate",
+    "backup": "node manage-keys.js backup"
+  },
+  "keywords": [
+    "ssh",
+    "keys",
+    "management",
+    "distributed",
+    "vm"
+  ],
+  "author": "JMWII",
+  "license": "Proprietary"
+} 

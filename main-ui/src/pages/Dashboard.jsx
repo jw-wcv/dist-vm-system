@@ -61,6 +61,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useSuperVM } from '../context/SuperVMContext';
+import SystemOverview from '../components/SystemOverview';
 
 const Dashboard = () => {
   const { 
@@ -146,21 +147,8 @@ const Dashboard = () => {
 
   return (
     <div className="space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard</h1>
-          <p className="text-gray-500 dark:text-gray-400">
-            Super VM system overview and performance metrics
-          </p>
-        </div>
-        <div className="flex items-center space-x-2">
-          <div className={`px-3 py-1 rounded-full text-sm font-medium ${getStatusColor(systemStatus)}`}>
-            {systemStatus}
-          </div>
-          <div className={`w-2 h-2 rounded-full ${isConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-        </div>
-      </div>
+      {/* Use the new SystemOverview component */}
+      <SystemOverview />
 
       {/* Quick Stats */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">

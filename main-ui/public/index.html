@@ -1,19 +1,28 @@
-<!-- index.html -->
-<!-- 
-  Description: Main HTML template for the distributed VM system UI
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Super VM - Distributed Computing Dashboard</title>
+  <meta name="description" content="Super VM - Unified interface for distributed VM management and orchestration" />
   
-  This file serves as the primary HTML template for the Electron-based
-  user interface of the distributed VM system. It provides the structure
-  for the application layout and user interactions.
+  <!-- Preload critical resources -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   
-  Current Status: Empty file - HTML structure to be added as needed
+  <!-- Favicon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+  <link rel="manifest" href="/site.webmanifest" />
   
-  Planned Structure:
-    - Main application container
-    - VM management interface
-    - Status display area
-    - Control buttons and forms
-    - Modal dialog containers
-  
-  Usage: Loaded by the Electron main process as the application interface
--->
+  <!-- Theme color -->
+  <meta name="theme-color" content="#3B82F6" />
+  <meta name="msapplication-TileColor" content="#3B82F6" />
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module" src="/src/index.jsx"></script>
+</body>
+</html>

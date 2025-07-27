@@ -75,8 +75,6 @@ install_dependencies() {
 quick_test() {
     print_header "Running Quick Component Tests"
     
-    cd cluster-manager
-    
     if [ -f "quick-test.js" ]; then
         print_status "Running quick component validation..."
         node quick-test.js
@@ -84,8 +82,6 @@ quick_test() {
         print_error "Quick test file not found"
         return 1
     fi
-    
-    cd ..
 }
 
 # Check system status
@@ -154,8 +150,6 @@ full_test() {
         return 1
     fi
     
-    cd cluster-manager
-    
     if [ -f "test-super-vm.js" ]; then
         print_status "Running full system tests..."
         node test-super-vm.js
@@ -163,8 +157,6 @@ full_test() {
         print_error "Full test file not found"
         return 1
     fi
-    
-    cd ..
 }
 
 # Manual API tests

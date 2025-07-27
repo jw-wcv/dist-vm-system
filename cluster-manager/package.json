@@ -6,9 +6,9 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "node test-super-vm.js",
-    "quick-test": "node quick-test.js",
-    "example": "node super-vm-example.js",
+    "test": "node ../test/test-super-vm.js",
+    "quick-test": "node ../test/quick-test.js",
+    "example": "node ../test/super-vm-example.js",
     "dev": "nodemon index.js"
   },
   "dependencies": {

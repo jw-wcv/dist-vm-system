@@ -1,0 +1,93 @@
+# System Configuration .gitignore
+# This file prevents sensitive system data from being committed to version control
+
+# Environment files with sensitive data
+.env
+.env.local
+.env.production
+.env.staging
+.env.test
+.env.development
+
+# SSL certificates and keys
+*.pem
+*.key
+*.crt
+*.cer
+*.der
+*.p12
+*.pfx
+
+# Log files
+*.log
+logs/
+app.log
+error.log
+access.log
+
+# Data files
+data/
+*.db
+*.sqlite
+*.sqlite3
+*.json
+
+# Temporary files
+temp/
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Cache files
+.cache/
+cache/
+node_modules/
+
+# Backup files
+backups/
+*.backup
+*.old
+*.bak
+
+# Metrics and monitoring data
+metrics/
+prometheus/
+grafana/
+
+# Docker files
+docker-compose.override.yml
+.dockerignore
+
+# Kubernetes files
+*.kubeconfig
+kubeconfig
+*.yaml
+*.yml
+
+# Terraform files
+*.tfstate
+*.tfstate.backup
+*.tfvars
+.terraform/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Configuration overrides
+config.local.js
+settings.local.json
+
+# Allow configuration templates
+!env.example
+!*.template
+
+# Allow documentation
+!README.md
+!*.md 

@@ -1,0 +1,76 @@
+# Web3 Configuration .gitignore
+# This file prevents sensitive web3 data from being committed to version control
+
+# Private keys (NEVER commit these!)
+*.pem
+*.key
+*.p12
+*.pfx
+*.keystore
+*.json
+
+# Wallet files
+wallets/
+*.wallet
+*.dat
+
+# Private key files with various extensions
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# Certificate files
+*.crt
+*.cer
+*.der
+
+# Backup files
+backups/
+*.backup
+*.old
+*.bak
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Log files
+*.log
+logs/
+
+# Environment files with sensitive data
+.env
+.env.local
+.env.production
+.env.staging
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Cache files
+.cache/
+cache/
+
+# Node modules (if any)
+node_modules/
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Allow public keys (these are safe to share)
+!*.pub
+
+# Allow configuration templates
+!env.example
+!*.template 

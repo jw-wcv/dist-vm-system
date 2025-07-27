@@ -1,0 +1,24 @@
+{
+  "name": "dist-vm-tests",
+  "version": "1.0.0",
+  "description": "Test suite for distributed VM system",
+  "type": "module",
+  "main": "test-super-vm.js",
+  "scripts": {
+    "test": "node test-super-vm.js",
+    "test-keys": "node test-key-manager.js",
+    "test-system": "./test-super-vm-system.sh",
+    "test-quick": "./quick-api-test.sh",
+    "test-config": "./test-configuration.sh"
+  },
+  "keywords": [
+    "testing",
+    "distributed",
+    "vm",
+    "super-vm",
+    "ssh",
+    "keys"
+  ],
+  "author": "JMWII",
+  "license": "Proprietary"
+} 

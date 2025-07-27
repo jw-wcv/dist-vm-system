@@ -1,0 +1,77 @@
+# Aleph Configuration .gitignore
+# This file prevents sensitive Aleph-specific data from being committed to version control
+
+# Environment files with sensitive data
+.env
+.env.local
+.env.production
+.env.staging
+.env.test
+
+# Private keys and credentials
+*.pem
+*.key
+*.keystore
+*.json
+
+# VM state files
+*.vmdk
+*.vdi
+*.qcow2
+*.raw
+*.img
+
+# Backup files
+backups/
+*.backup
+*.old
+*.bak
+
+# Log files
+*.log
+logs/
+aleph.log
+
+# Temporary files
+*.tmp
+*.temp
+*.swp
+*.swo
+
+# Cache files
+.cache/
+cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+
+# Terraform files (if using Terraform)
+*.tfstate
+*.tfstate.backup
+*.tfvars
+
+# Kubernetes files (if using K8s)
+*.kubeconfig
+kubeconfig
+
+# Docker files
+docker-compose.override.yml
+
+# IDE files
+.vscode/
+.idea/
+*.sublime-*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Allow configuration templates
+!env.example
+!*.template
+
+# Allow documentation
+!README.md
+!*.md 

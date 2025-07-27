@@ -16,7 +16,7 @@
 //   - SuperVMContext
 
 import { useContext } from 'react';
-import SuperVMContext from '../context/SuperVMContext';
+import { SuperVMContext } from '../context/SuperVMContext';
 
 export const useSuperVM = () => {
   const context = useContext(SuperVMContext);

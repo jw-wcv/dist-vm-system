@@ -59,10 +59,16 @@ const Sidebar = ({ isOpen, onClose }) => {
 
   const navigation = [
     {
-      name: 'Dashboard',
+      name: 'System Overview',
       href: '/dashboard',
       icon: LayoutDashboard,
-      description: 'System overview and metrics'
+      description: 'OS-like system overview'
+    },
+    {
+      name: 'Process Manager',
+      href: '/process-manager',
+      icon: Activity,
+      description: 'Task manager for processes'
     },
     {
       name: 'VM Manager',
@@ -71,16 +77,22 @@ const Sidebar = ({ isOpen, onClose }) => {
       description: 'Manage virtual machines'
     },
     {
-      name: 'Task Manager',
-      href: '/task-manager',
-      icon: Activity,
-      description: 'Monitor and manage tasks'
+      name: 'Network Monitor',
+      href: '/network-monitor',
+      icon: Cpu,
+      description: 'Network connectivity & traffic'
     },
     {
       name: 'Resource Monitor',
       href: '/resource-monitor',
-      icon: Cpu,
+      icon: Memory,
       description: 'Real-time resource monitoring'
+    },
+    {
+      name: 'Task Manager',
+      href: '/task-manager',
+      icon: HardDrive,
+      description: 'Monitor and manage tasks'
     },
     {
       name: 'Settings',

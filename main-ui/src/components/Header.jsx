@@ -39,6 +39,7 @@ import {
   Zap
 } from 'lucide-react';
 import { useSuperVM } from '../context/SuperVMContext';
+import SystemTray from './SystemTray';
 
 const Header = ({ onMenuClick, theme, onThemeToggle }) => {
   const { 
@@ -148,11 +149,8 @@ const Header = ({ onMenuClick, theme, onThemeToggle }) => {
             </motion.div>
           </button>
 
-          {/* Notifications */}
-          <button className="p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700 relative">
-            <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </button>
+          {/* System Tray */}
+          <SystemTray />
 
           {/* Theme toggle */}
           <button

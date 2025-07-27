@@ -336,13 +336,4 @@ export const SuperVMProvider = ({ children }) => {
   );
 };
 
-// Custom hook to use Super VM context
-export const useSuperVM = () => {
-  const context = useContext(SuperVMContext);
-  if (!context) {
-    throw new Error('useSuperVM must be used within a SuperVMProvider');
-  }
-  return context;
-};
-
-export default SuperVMContext; 
+export { SuperVMContext, SuperVMProvider }; 

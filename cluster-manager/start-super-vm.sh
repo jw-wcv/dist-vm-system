@@ -125,20 +125,24 @@ print_status "Initializing Aleph network connection..."
 cd cluster-manager
 
 # Check if we have SSH keys
-if [ ! -f "ClusterVMKey_private_key.pem" ]; then
-    print_status "No SSH keys found. Creating new SSH key pair..."
-    node -e "
-        import('./vmManager.js').then(async (vmManager) => {
-            try {
-                await vmManager.createSSHKey();
+print_status "Checking SSH key management..."
+node -e "
+    import('../config/keys/keyManager.js').then(async (keyManager) => {
+        try {
+            const keys = await keyManager.listKeys();
+            if (keys.length === 0) {
+                console.log('No SSH keys found. Creating new SSH key pair...');
+                await keyManager.generateKey('cluster-vm-key');
                 console.log('SSH key created successfully');
-            } catch (error) {
-                console.error('Failed to create SSH key:', error);
-                process.exit(1);
+            } else {
+                console.log('Found', keys.length, 'existing SSH keys');
             }
-        });
-    "
-fi
+        } catch (error) {
+            console.error('SSH key management error:', error);
+            process.exit(1);
+        }
+    });
+"
 
 # Discover existing VMs
 print_status "Discovering existing VMs..."

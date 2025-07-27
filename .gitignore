@@ -114,6 +114,35 @@ Thumbs.db
 *_private_key.pem
 *.pem
 *.key
+config/keys/*.pem
+config/keys/*.key
+config/keys/backups/
+
+# Web3 sensitive files (for security)
+config/web3/*.pem
+config/web3/*.key
+config/web3/*.keystore
+config/web3/*.json
+config/web3/wallets/
+config/web3/backups/
+config/web3/.env
+config/web3/.env.*
+
+# Aleph sensitive files (for security)
+config/aleph/.env
+config/aleph/.env.*
+config/aleph/backups/
+config/aleph/logs/
+config/aleph/*.log
+
+# System sensitive files (for security)
+config/system/.env
+config/system/.env.*
+config/system/logs/
+config/system/data/
+config/system/temp/
+config/system/backups/
+config/system/*.log
 
 # Test files
 test-results/

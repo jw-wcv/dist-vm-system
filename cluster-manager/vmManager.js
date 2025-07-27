@@ -31,7 +31,7 @@
 
 // cluster-manager/vmManager.js
 
-import { alephConfig } from '../config/index.js';
+import { alephConfig } from '../config/aleph/index.js';
 import { AuthenticatedAlephHttpClient } from '@aleph-sdk/client';
 import forge from 'node-forge';
 import axios from 'axios';
@@ -39,15 +39,16 @@ import { execSync } from 'child_process';
 import fs from 'fs';
 import https from 'https';
 import path from 'path';
+import keyManager from '../config/keys/keyManager.js';
 
 // Initialize Aleph client
 let client;
 try {
-    if (alephConfig.alephAccount) {
-        client = new AuthenticatedAlephHttpClient(alephConfig.alephAccount);
+    if (alephConfig.config.alephAccount) {
+        client = new AuthenticatedAlephHttpClient(alephConfig.config.alephAccount);
         console.log('Aleph client initialized with authenticated account');
     } else {
-        console.warn('ALEPH_ACCOUNT_PRIVATE_KEY not set, using unauthenticated client');
+        console.warn('No Aleph account configured, using unauthenticated client');
         client = new AuthenticatedAlephHttpClient();
     }
 } catch (error) {
@@ -59,46 +60,69 @@ try {
 export async function createSSHKey() {
     console.log('Starting SSH key generation for cluster...');
     
-    // Ensure keys directory exists
-    const keysDir = path.join(process.cwd(), 'config', 'keys');
-    if (!fs.existsSync(keysDir)) {
-        fs.mkdirSync(keysDir, { recursive: true });
-    }
-    
-    let keyPair = forge.pki.rsa.generateKeyPair({ bits: 4096 });
-    let privateKeyPem = forge.pki.privateKeyToPem(keyPair.privateKey);
-    let publicKeyOpenSSH = forge.ssh.publicKeyToOpenSSH(
-        keyPair.publicKey,
-        "ALEPH_VM_ACCESS"
-    );
-
-    const privateKeyPath = path.join(keysDir, 'cluster-vm-key.pem');
-    const publicKeyPath = path.join(keysDir, 'cluster-vm-key.pub');
-
-    // Save private key
-    fs.writeFileSync(privateKeyPath, privateKeyPem);
-    
-    // Save public key
-    fs.writeFileSync(publicKeyPath, publicKeyOpenSSH);
-    
-    // Set proper permissions (Unix-like systems only)
     try {
-        execSync(`chmod 600 "${privateKeyPath}"`);
-        execSync(`chmod 644 "${publicKeyPath}"`);
+        // Use key manager to generate keys
+        const result = keyManager.generateKeyPairWithSSHKeygen();
+        
+        if (result.success) {
+            console.log('SSH key generated successfully using key manager');
+            console.log(`Private key saved to: ${result.privateKeyPath}`);
+            console.log(`Public key saved to: ${result.publicKeyPath}`);
+            
+            // Get the generated keys
+            const publicKey = keyManager.getPublicKey();
+            const privateKey = keyManager.getPrivateKey();
+            
+            return {
+                privateKeyPem: privateKey,
+                publicKeyOpenSSH: publicKey,
+                privateKeyPath: result.privateKeyPath,
+                publicKeyPath: result.publicKeyPath
+            };
+        } else {
+            throw new Error(`Failed to generate SSH keys: ${result.error}`);
+        }
     } catch (error) {
-        console.warn('Could not set key permissions (this is normal on Windows):', error.message);
+        console.error('Error generating SSH keys:', error.message);
+        
+        // Fallback to forge-based generation
+        console.log('Falling back to forge-based key generation...');
+        
+        keyManager.ensureKeysDirectory();
+        
+        let keyPair = forge.pki.rsa.generateKeyPair({ bits: 4096 });
+        let privateKeyPem = forge.pki.privateKeyToPem(keyPair.privateKey);
+        let publicKeyOpenSSH = forge.ssh.publicKeyToOpenSSH(
+            keyPair.publicKey,
+            "ALEPH_VM_ACCESS"
+        );
+
+        const privateKeyPath = keyManager.getKeyPaths().privateKey;
+        const publicKeyPath = keyManager.getKeyPaths().publicKey;
+
+        // Save keys
+        fs.writeFileSync(privateKeyPath, privateKeyPem);
+        fs.writeFileSync(publicKeyPath, publicKeyOpenSSH);
+        
+        // Set permissions
+        try {
+            execSync(`chmod 600 "${privateKeyPath}"`);
+            execSync(`chmod 644 "${publicKeyPath}"`);
+        } catch (error) {
+            console.warn('Could not set key permissions (this is normal on Windows):', error.message);
+        }
+
+        console.log('SSH key generated successfully using forge fallback');
+        console.log(`Private key saved to: ${privateKeyPath}`);
+        console.log(`Public key saved to: ${publicKeyPath}`);
+
+        return {
+            privateKeyPem,
+            publicKeyOpenSSH,
+            privateKeyPath,
+            publicKeyPath
+        };
     }
-
-    console.log('SSH key generated successfully');
-    console.log(`Private key saved to: ${privateKeyPath}`);
-    console.log(`Public key saved to: ${publicKeyPath}`);
-
-    return {
-        privateKeyPem,
-        publicKeyOpenSSH,
-        privateKeyPath,
-        publicKeyPath
-    };
 }
 
 // Automate VM Setup Script
@@ -127,23 +151,17 @@ export function setupWorkerVM() {
 // Get existing SSH keys
 async function getSSHKeys() {
     try {
-        const keysDir = path.join(process.cwd(), 'config', 'keys');
-        const privateKeyPath = path.join(keysDir, 'cluster-vm-key.pem');
-        const publicKeyPath = path.join(keysDir, 'cluster-vm-key.pub');
+        const validation = keyManager.validateKeyPair();
         
-        // Check if keys exist
-        if (fs.existsSync(privateKeyPath) && fs.existsSync(publicKeyPath)) {
-            const privateKey = fs.readFileSync(privateKeyPath, 'utf8');
-            const publicKey = fs.readFileSync(publicKeyPath, 'utf8');
-            
+        if (validation.valid) {
             console.log('Found existing SSH keys in config/keys/');
             return [{
-                key: publicKey.trim(),
-                privateKeyPath,
-                publicKeyPath
+                key: validation.publicKey,
+                privateKeyPath: validation.privateKeyPath,
+                publicKeyPath: validation.publicKeyPath
             }];
         } else {
-            console.log('No existing SSH keys found in config/keys/');
+            console.log('No valid SSH keys found in config/keys/');
             return [];
         }
     } catch (error) {
@@ -170,16 +188,20 @@ export async function createVMInstance() {
         // Use the correct Aleph SDK method
         const instance = await client.createInstance({
             authorized_keys: [selectedKey],
-            resources: { vcpus: 4, memory: 8192, seconds: 14400 },
-            payment: { chain: "ETH", type: "hold" },
-            channel: alephConfig.alephChannel,
-            image: alephConfig.alephImage,
+            resources: { 
+                vcpus: alephConfig.config.vmDefaults.vcpus, 
+                memory: alephConfig.config.vmDefaults.memory, 
+                seconds: alephConfig.config.vmDefaults.seconds 
+            },
+            payment: alephConfig.config.payment,
+            channel: alephConfig.config.alephChannel,
+            image: alephConfig.config.alephImage,
             environment: { 
                 name: label,
-                internet: true, 
-                hypervisor: "qemu"
+                internet: alephConfig.config.vmDefaults.internet, 
+                hypervisor: alephConfig.config.vmDefaults.hypervisor
             },
-            rootfs: {"use_latest": true, persistence: "host", size_mib: 20000 }
+            rootfs: {"use_latest": true, persistence: "host", size_mib: alephConfig.config.vmDefaults.storage }
         });
 
         console.log(`VM created successfully:`, instance);
@@ -213,7 +235,7 @@ export async function listVMInstances() {
         // Use the correct Aleph SDK method to get messages
         const alephInstances = await client.getMessages({
             types: ["INSTANCE"], // Fetch only instance messages
-            channels: [alephConfig.alephChannel], // Filter by channel
+            channels: [alephConfig.config.alephChannel], // Filter by channel
         });
 
         if (!alephInstances || !alephInstances.messages) {
@@ -259,7 +281,7 @@ async function fetchInstanceIp(itemHash) {
         console.log(`Fetching IPv6 address for instance with item hash: ${itemHash}`);
 
         // API call to fetch the instance allocation details
-        const response = await axios.get(`${alephConfig.schedulerUrl}/api/v0/allocation/${itemHash}`, {
+        const response = await axios.get(`${alephConfig.config.schedulerUrl}/api/v0/allocation/${itemHash}`, {
             httpsAgent: new https.Agent({
                 rejectUnauthorized: false
             })

@@ -18,13 +18,15 @@
 //   - alephConfig.js (Aleph network configuration)
 //   - systemConfig.js (System-wide configuration)
 
-import alephConfig from './alephConfig.js';
-import systemConfig from './systemConfig.js';
+import alephConfig from './aleph/index.js';
+import systemConfig from './system/index.js';
+import web3Config from './web3/index.js';
 
 // Unified configuration object
 export const config = {
     aleph: alephConfig,
     system: systemConfig,
+    web3: web3Config,
     
     // Convenience getters
     get port() {
@@ -57,11 +59,19 @@ export const config = {
     
     get storage() {
         return this.system.storage;
+    },
+    
+    get wallet() {
+        return this.web3.wallet;
+    },
+    
+    get network() {
+        return this.web3.network;
     }
 };
 
 // Individual exports
-export { alephConfig, systemConfig };
+export { alephConfig, systemConfig, web3Config };
 
 // Default export
 export default config; 
