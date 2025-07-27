@@ -1,0 +1,31 @@
+# SSH Keys Directory .gitignore
+# This file prevents private SSH keys from being committed to version control
+
+# Private keys (NEVER commit these!)
+*.pem
+*.key
+*.p12
+*.pfx
+
+# Private key files with various extensions
+id_rsa
+id_dsa
+id_ecdsa
+id_ed25519
+
+# Certificate files
+*.crt
+*.cer
+*.der
+
+# Key backup files
+*.backup
+*.old
+*.bak
+
+# Temporary key files
+*.tmp
+*.temp
+
+# Allow public keys (these are safe to share)
+!*.pub 

@@ -16,6 +16,7 @@
 import express from 'express';
 import { listVMInstances, createVMInstance } from './vmManager.js';
 import { default as Scheduler } from './distributed-scheduler.js';
+import { systemConfig } from '../config/index.js';
 
 const app = express();
 
@@ -38,7 +39,7 @@ async function initializeSuperVM() {
 initializeSuperVM();
 
 // Middleware
-app.use(express.json({ limit: '100mb' }));
+app.use(express.json({ limit: systemConfig.api.maxPayloadSize }));
 app.use(express.urlencoded({ extended: true }));
 
 // Basic cluster status endpoint
@@ -258,6 +259,6 @@ app.get('/api/health', (req, res) => {
   res.json(health);
 });
 
-app.listen(3000, () => {
-  console.log('Cluster Manager API with Super VM running on port 3000');
+app.listen(systemConfig.ports.clusterManager, () => {
+  console.log(`Cluster Manager API with Super VM running on port ${systemConfig.ports.clusterManager}`);
 });

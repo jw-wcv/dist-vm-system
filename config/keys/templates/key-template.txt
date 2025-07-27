@@ -1,0 +1,41 @@
+# SSH Key Template
+# This file shows the expected format for SSH keys in the distributed VM system
+
+# =============================================================================
+# PRIVATE KEY FORMAT (RSA 4096-bit)
+# =============================================================================
+
+-----BEGIN RSA PRIVATE KEY-----
+MIIEpAIBAAKCAQEA...
+[Your private key content here]
+...
+-----END RSA PRIVATE KEY-----
+
+# =============================================================================
+# PUBLIC KEY FORMAT (OpenSSH)
+# =============================================================================
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQ...
+[Your public key content here]
+... ALEPH_VM_ACCESS
+
+# =============================================================================
+# USAGE NOTES
+# =============================================================================
+
+# 1. Private keys should be saved with .pem extension
+# 2. Public keys should be saved with .pub extension
+# 3. Use RSA 4096-bit keys for maximum security
+# 4. Comment should be "ALEPH_VM_ACCESS" for consistency
+# 5. Set proper permissions: chmod 600 for private, chmod 644 for public
+
+# =============================================================================
+# GENERATION COMMAND
+# =============================================================================
+
+# To generate a new key pair:
+# ssh-keygen -t rsa -b 4096 -C "ALEPH_VM_ACCESS" -f cluster-vm-key -N ""
+
+# This will create:
+# - cluster-vm-key (private key)
+# - cluster-vm-key.pub (public key) 
