@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { useSuperVM } from '../context/SuperVMContext.js';
 import SystemTray from './SystemTray.js';
+import WalletConnect from './WalletConnect.js';
 
 const Header = ({ onMenuClick, theme, onThemeToggle }) => {
   const { 
@@ -101,6 +102,7 @@ const Header = ({ onMenuClick, theme, onThemeToggle }) => {
           )
         ),
         React.createElement(SystemTray),
+        React.createElement(WalletConnect),
         React.createElement('button', {
           onClick: onThemeToggle,
           className: 'p-2 rounded-md text-gray-400 hover:text-gray-600 hover:bg-gray-100 dark:hover:bg-gray-700',

@@ -18,6 +18,7 @@ import LoadingSpinner from './components/LoadingSpinner.js';
 
 // Context
 import { SuperVMProvider } from './context/SuperVMContext.js';
+import { Web3Provider } from './context/Web3Context.js';
 
 // Hooks
 import { useSuperVM } from './context/SuperVMContext.js';
@@ -57,13 +58,14 @@ const App = () => {
 
   console.log('App rendering with theme:', theme);
 
-  return React.createElement(SuperVMProvider, null,
-    React.createElement(Router, { 
-      future: {
-        v7_startTransition: true,
-        v7_relativeSplatPath: true
-      }
-    },
+  return React.createElement(Web3Provider, null,
+    React.createElement(SuperVMProvider, null,
+      React.createElement(Router, { 
+        future: {
+          v7_startTransition: true,
+          v7_relativeSplatPath: true
+        }
+      },
       React.createElement('div', { className: `min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors duration-200 ${theme} flex overflow-hidden` },
         React.createElement(Sidebar, { 
           isOpen: sidebarOpen, 
@@ -102,9 +104,10 @@ const App = () => {
               border: `1px solid ${theme === 'dark' ? '#4B5563' : '#E5E7EB'}`,
             },
           },
-        })
+        }        )
       )
     )
+  )
   );
 };
 
