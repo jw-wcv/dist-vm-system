@@ -227,16 +227,73 @@ export const SuperVMProvider = ({ children }) => {
 
   const scaleSystem = async (nodes) => {
     try {
-      const result = await apiCall('/super-vm/scale', {
+      const response = await apiCall('/super-vm/scale', {
         method: 'POST',
-        data: { nodes }
+        body: JSON.stringify({ nodes })
       });
       
-      toast.success(`System scaled by ${nodes} nodes`);
-      return result;
+      if (response.success) {
+        await refreshData();
+        console.log(`System scaled by ${nodes} nodes`);
+      }
     } catch (error) {
-      const errorMessage = error.response?.data?.error || error.message;
-      toast.error(`Scaling failed: ${errorMessage}`);
+      console.error('Failed to scale system:', error);
+    }
+  };
+
+  // Create VM with wallet credentials
+  const createVMWithWallet = async (credentials, vmConfig = {}) => {
+    try {
+      const response = await apiCall('/vms/create-with-wallet', {
+        method: 'POST',
+        body: JSON.stringify({
+          walletAddress: credentials.walletAddress,
+          privateKey: credentials.privateKey,
+          signature: credentials.signature,
+          message: credentials.message,
+          method: credentials.method,
+          vmConfig,
+          paymentMethod: 'aleph'
+        })
+      });
+      
+      if (response.item_hash) {
+        await refreshData();
+        console.log('VM created successfully:', response);
+        return response;
+      } else {
+        throw new Error('Failed to create VM: No item hash returned');
+      }
+    } catch (error) {
+      console.error('Failed to create VM with wallet:', error);
+      throw error;
+    }
+  };
+
+  // Get VM status
+  const getVMStatus = async (vmId) => {
+    try {
+      const response = await apiCall(`/vms/${vmId}/status`);
+      return response;
+    } catch (error) {
+      console.error('Failed to get VM status:', error);
+      throw error;
+    }
+  };
+
+  // Delete VM
+  const deleteVM = async (vmId) => {
+    try {
+      const response = await apiCall(`/vms/${vmId}`, {
+        method: 'DELETE'
+      });
+      
+      if (response.success) {
+        await refreshData();
+        console.log(`VM ${vmId} deleted successfully`);
+      }
+    } catch (error) {
+      console.error('Failed to delete VM:', error);
       throw error;
     }
   };
@@ -267,7 +324,10 @@ export const SuperVMProvider = ({ children }) => {
       fetchResourcePool,
       fetchPerformanceMetrics,
       fetchNodes,
-      fetchTasks
+      fetchTasks,
+      createVMWithWallet,
+      getVMStatus,
+      deleteVM
     }
   };
 

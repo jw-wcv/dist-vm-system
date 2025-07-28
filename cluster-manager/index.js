@@ -14,7 +14,7 @@
 //   - vmManager.js (VM management)
 
 import express from 'express';
-import { listVMInstances, createVMInstance } from './vmManager.js';
+import { listVMInstances, createVMInstance, createVMInstanceWithWallet } from './vmManager.js';
 import { default as Scheduler } from './distributed-scheduler.js';
 import systemConfig from '../config/system/index.js';
 
@@ -159,7 +159,7 @@ app.post('/api/super-vm/scale', async (req, res) => {
   }
 });
 
-// VM management endpoints
+// VM management endpoints with wallet integration
 app.get('/api/vms', async (req, res) => {
   if (!superVM) {
     return res.status(503).json({ error: 'Super VM not initialized' });
@@ -181,6 +181,87 @@ app.post('/api/vms', async (req, res) => {
   try {
     const newVM = await createVMInstance();
     res.json(newVM);
+  } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// New endpoint for wallet-connected VM creation
+app.post('/api/vms/create-with-wallet', async (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    const { 
+      walletAddress, 
+      privateKey, 
+      signature,
+      message,
+      method = 'hardcoded',
+      vmConfig = {},
+      paymentMethod = 'aleph'
+    } = req.body;
+
+    if (!walletAddress) {
+      return res.status(400).json({ 
+        error: 'Wallet address is required for VM creation' 
+      });
+    }
+
+    let newVM;
+    
+    if (method === 'metamask') {
+      // Handle MetaMask signature-based VM creation
+      if (!signature || !message) {
+        return res.status(400).json({ 
+          error: 'Signature and message are required for MetaMask VM creation' 
+        });
+      }
+      
+      const { createVMInstanceWithMetaMask } = await import('./vmManager.js');
+      newVM = await createVMInstanceWithMetaMask(walletAddress, signature, message, vmConfig);
+    } else {
+      // Handle private key-based VM creation
+      if (!privateKey) {
+        return res.status(400).json({ 
+          error: 'Private key is required for VM creation' 
+        });
+      }
+      
+      newVM = await createVMInstanceWithWallet(walletAddress, privateKey, vmConfig, paymentMethod);
+    }
+    
+    res.json(newVM);
+  } catch (error) {
+    console.error('Wallet-connected VM creation failed:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// Endpoint to get VM creation status
+app.get('/api/vms/:id/status', async (req, res) => {
+  if (!superVM) {
+    return res.status(503).json({ error: 'Super VM not initialized' });
+  }
+  
+  try {
+    const vmId = req.params.id;
+    const vms = await listVMInstances();
+    const vm = vms.find(v => v.id === vmId);
+    
+    if (!vm) {
+      return res.status(404).json({ error: 'VM not found' });
+    }
+    
+    res.json({
+      id: vm.id,
+      status: vm.status,
+      ipv6: vm.ipv6,
+      name: vm.name,
+      createdAt: vm.createdAt,
+      lastSeen: vm.lastSeen
+    });
   } catch (error) {
     res.status(500).json({ error: error.message });
   }
@@ -279,6 +360,94 @@ app.get('/api/nodes/:id', (req, res) => {
     }
     res.json(node);
   } catch (error) {
+    res.status(500).json({ error: error.message });
+  }
+});
+
+// SSH key management endpoints
+app.get('/api/ssh-keys', async (req, res) => {
+  try {
+    const keyManager = await import('../config/keys/keyManager.js');
+    const keys = keyManager.default.getKeysInfo();
+    
+    res.json({
+      keys: keys.map(key => ({
+        name: key.name,
+        publicKey: key.validation?.publicKey || null,
+        privateKeyPath: key.validation?.privateKeyPath || null,
+        publicKeyPath: key.validation?.publicKeyPath || null,
+        valid: key.validation?.valid || false,
+        createdAt: key.createdAt || null
+      })).filter(key => key.valid && key.publicKey) // Only return valid keys with public keys
+    });
+  } catch (error) {
+    console.error('Error fetching SSH keys:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.post('/api/ssh-keys/generate', async (req, res) => {
+  try {
+    const { keyName = 'cluster-vm-key' } = req.body;
+    const keyManager = await import('../config/keys/keyManager.js');
+    
+    const result = await keyManager.default.generateKey(keyName);
+    
+    if (result.success) {
+      res.json({
+        success: true,
+        message: `SSH key '${keyName}' generated successfully`,
+        keyInfo: result.keyInfo
+      });
+    } else {
+      res.status(400).json({
+        success: false,
+        error: result.error
+      });
+    }
+  } catch (error) {
+    console.error('Error generating SSH key:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
+app.delete('/api/ssh-keys/:keyName', async (req, res) => {
+  try {
+    const { keyName } = req.params;
+    const keyManager = await import('../config/keys/keyManager.js');
+    
+    // Get the key paths
+    const keyPaths = keyManager.default.getKeyPaths(keyName);
+    
+    // Delete the key files
+    const fs = await import('fs');
+    const path = await import('path');
+    
+    let deletedFiles = [];
+    
+    if (fs.existsSync(keyPaths.privateKey)) {
+      fs.unlinkSync(keyPaths.privateKey);
+      deletedFiles.push('private key');
+    }
+    
+    if (fs.existsSync(keyPaths.publicKey)) {
+      fs.unlinkSync(keyPaths.publicKey);
+      deletedFiles.push('public key');
+    }
+    
+    if (deletedFiles.length === 0) {
+      return res.status(404).json({
+        success: false,
+        error: `SSH key '${keyName}' not found`
+      });
+    }
+    
+    res.json({
+      success: true,
+      message: `SSH key '${keyName}' deleted successfully (${deletedFiles.join(', ')})`
+    });
+  } catch (error) {
+    console.error('Error deleting SSH key:', error);
     res.status(500).json({ error: error.message });
   }
 });

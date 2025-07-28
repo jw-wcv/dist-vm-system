@@ -186,7 +186,7 @@ export const Web3Provider = ({ children }) => {
     const initializeHardcodedProvider = async () => {
       try {
         if (hardcodedConfig.ethereum.privateKey && hardcodedConfig.ethereum.rpcUrl) {
-          const provider = new ethers.JsonRpcProvider(hardcodedConfig.ethereum.rpcUrl);
+          const provider = new ethers.providers.JsonRpcProvider(hardcodedConfig.ethereum.rpcUrl);
           const wallet = new ethers.Wallet(hardcodedConfig.ethereum.privateKey, provider);
           
           dispatch({
@@ -215,7 +215,7 @@ export const Web3Provider = ({ children }) => {
       const decimals = await tokenContract.decimals();
       const symbol = await tokenContract.symbol();
       
-      const formattedBalance = ethers.formatUnits(balance, decimals);
+      const formattedBalance = ethers.utils.formatUnits(balance, decimals);
       
       dispatch({
         type: ACTION_TYPES.SET_TOKEN_BALANCE,
@@ -267,8 +267,8 @@ export const Web3Provider = ({ children }) => {
       });
 
       if (accounts.length > 0) {
-        const provider = new ethers.BrowserProvider(window.ethereum);
-        const signer = await provider.getSigner();
+        const provider = new ethers.providers.Web3Provider(window.ethereum);
+        const signer = provider.getSigner();
         const address = await signer.getAddress();
         const balance = await provider.getBalance(address);
         const network = await provider.getNetwork();
@@ -300,7 +300,7 @@ export const Web3Provider = ({ children }) => {
 
         dispatch({
           type: ACTION_TYPES.SET_BALANCE,
-          payload: ethers.formatEther(balance)
+          payload: ethers.utils.formatEther(balance)
         });
 
         dispatch({
@@ -368,7 +368,7 @@ export const Web3Provider = ({ children }) => {
 
       dispatch({
         type: ACTION_TYPES.SET_BALANCE,
-        payload: ethers.formatEther(balance)
+        payload: ethers.utils.formatEther(balance)
       });
 
       dispatch({
@@ -429,7 +429,7 @@ export const Web3Provider = ({ children }) => {
     try {
       const tx = await state.signer.sendTransaction({
         to,
-        value: ethers.parseEther(value.toString()),
+        value: ethers.utils.parseEther(value.toString()),
         data
       });
 
@@ -511,7 +511,7 @@ export const Web3Provider = ({ children }) => {
           const balance = await state.provider.getBalance(state.address);
           dispatch({
             type: ACTION_TYPES.SET_BALANCE,
-            payload: ethers.formatEther(balance)
+            payload: ethers.utils.formatEther(balance)
           });
 
           // Update token balances
@@ -528,6 +528,45 @@ export const Web3Provider = ({ children }) => {
     }
   }, [state.isConnected, state.provider, state.address]);
 
+  // Get wallet credentials for VM creation
+  const getWalletCredentials = async () => {
+    if (!state.isConnected || !state.walletInfo?.address) {
+      throw new Error('Wallet not connected');
+    }
+
+    if (state.connectionType === 'metamask') {
+      // For MetaMask, we'll use the signer to sign a message
+      if (!state.signer) {
+        throw new Error('MetaMask signer not available');
+      }
+      
+      // Sign a message to prove wallet ownership
+      const message = `Create VM on Aleph Network - ${Date.now()}`;
+      const signature = await state.signer.signMessage(message);
+      
+      return {
+        walletAddress: state.walletInfo.address,
+        signature: signature,
+        message: message,
+        method: 'metamask'
+      };
+    } else if (state.connectionType === 'hardcoded') {
+      // For hardcoded config, return the private key
+      const privateKey = import.meta.env.VITE_ETH_PRIVATE_KEY;
+      if (!privateKey) {
+        throw new Error('No private key configured for hardcoded wallet');
+      }
+      
+      return {
+        walletAddress: state.walletInfo.address,
+        privateKey: privateKey,
+        method: 'hardcoded'
+      };
+    } else {
+      throw new Error('Unsupported wallet connection type');
+    }
+  };
+
   const value = {
     ...state,
     actions: {
@@ -537,7 +576,8 @@ export const Web3Provider = ({ children }) => {
       switchNetwork,
       sendTransaction,
       fetchTokenBalance,
-      fetchAllTokenBalances
+      fetchAllTokenBalances,
+      getWalletCredentials
     }
   };
 

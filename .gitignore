@@ -165,3 +165,5 @@ app/dist/
 
 # Local development
 .local/ 
+
+test/test-wallet-vm-creation.js

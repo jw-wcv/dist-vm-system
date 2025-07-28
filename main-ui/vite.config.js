@@ -25,9 +25,22 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { resolve } from 'path';
+import { nodePolyfills } from 'vite-plugin-node-polyfills';
 
 export default defineConfig({
-    plugins: [react()],
+    plugins: [
+        react(),
+        nodePolyfills({
+            // Whether to polyfill specific globals
+            globals: {
+                Buffer: true,
+                global: true,
+                process: true,
+            },
+            // Whether to polyfill `global`
+            protocolImports: true,
+        }),
+    ],
     root: resolve(__dirname, '.'),
     publicDir: 'public',
     server: {
@@ -44,4 +57,20 @@ export default defineConfig({
         host: true,
     },
     appType: 'spa',
+    optimizeDeps: {
+        include: [
+            '@aleph-sdk/client',
+            '@aleph-sdk/ethereum',
+            '@aleph-sdk/evm',
+            '@aleph-sdk/message',
+            '@aleph-sdk/core',
+            '@aleph-sdk/account',
+            'ethers',
+            'decimal.js',
+            '@ethereumjs/util',
+            '@metamask/eth-sig-util',
+            'bip39'
+        ],
+        exclude: []
+    }
 });

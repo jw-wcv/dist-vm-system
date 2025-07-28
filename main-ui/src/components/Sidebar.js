@@ -1,5 +1,5 @@
 // Sidebar.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { NavLink, useLocation } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -15,13 +15,20 @@ import {
   Zap,
   Cpu,
   Database,
-  HardDrive
+  HardDrive,
+  CheckCircle,
+  XCircle,
+  Clock,
+  AlertCircle,
+  Key
 } from 'lucide-react';
 import { useSuperVM } from '../context/SuperVMContext.js';
+import { useWeb3 } from '../context/Web3Context.js';
 
 const Sidebar = ({ isOpen, onClose }) => {
   console.log('Sidebar rendering with isOpen:', isOpen);
   const location = useLocation();
+  const [isCreatingVM, setIsCreatingVM] = useState(false);
   const { 
     systemStatus, 
     isConnected, 
@@ -29,6 +36,13 @@ const Sidebar = ({ isOpen, onClose }) => {
     activeNodes,
     actions 
   } = useSuperVM();
+
+  const { 
+    isConnected: walletConnected, 
+    walletInfo, 
+    connectionType,
+    actions: web3Actions 
+  } = useWeb3();
 
   const navigation = [
     {
@@ -48,6 +62,12 @@ const Sidebar = ({ isOpen, onClose }) => {
       href: '/vm-manager',
       icon: Server,
       description: 'Manage virtual machines'
+    },
+    {
+      name: 'SSH Keys',
+      href: '/ssh-keys',
+      icon: Key,
+      description: 'Manage SSH keys for VM access'
     },
     {
       name: 'Network Monitor',
@@ -98,6 +118,59 @@ const Sidebar = ({ isOpen, onClose }) => {
         return React.createElement('div', { className: 'w-2 h-2 bg-red-500 rounded-full' });
       default:
         return React.createElement('div', { className: 'w-2 h-2 bg-gray-500 rounded-full' });
+    }
+  };
+
+  // Create VM with wallet
+  const handleAddNode = async () => {
+    if (!walletConnected || !walletInfo?.address) {
+      alert('Please connect your wallet first to create VMs');
+      return;
+    }
+
+    setIsCreatingVM(true);
+    try {
+      // Get wallet credentials using the new function
+      const credentials = await web3Actions.getWalletCredentials();
+      
+      // Create VM with default configuration
+      const vmConfig = {
+        name: `Worker-Node-${Date.now()}`,
+        vcpus: 4,
+        memory: 8192,
+        storage: 80,
+        image: 'aleph/node'
+      };
+
+      // Call the API with the appropriate method
+      const response = await fetch('http://localhost:3000/api/vms/create-with-wallet', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          walletAddress: credentials.walletAddress,
+          privateKey: credentials.privateKey,
+          signature: credentials.signature,
+          message: credentials.message,
+          method: credentials.method,
+          vmConfig: vmConfig,
+          paymentMethod: 'aleph'
+        }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || 'Failed to create VM');
+      }
+
+      const result = await response.json();
+      console.log('VM created successfully:', result);
+      alert(`VM created successfully! ID: ${result.item_hash}`);
+      
+    } catch (error) {
+      console.error('Failed to create VM:', error);
+      alert(`Failed to create VM: ${error.message}`);
+    } finally {
+      setIsCreatingVM(false);
     }
   };
 
@@ -159,11 +232,23 @@ const Sidebar = ({ isOpen, onClose }) => {
           React.createElement('h2', { className: 'text-sm font-medium text-gray-900 dark:text-white mb-4' }, 'Quick Actions'),
           React.createElement('div', { className: 'space-y-2' },
             React.createElement('button', {
-              onClick: () => actions.scaleSystem(1),
-              className: 'w-full flex items-center justify-center px-3 py-2 text-sm font-medium text-white bg-blue-600 rounded-md hover:bg-blue-700 transition-colors'
+              onClick: handleAddNode,
+              disabled: isCreatingVM || !walletConnected,
+              className: `w-full flex items-center justify-center px-3 py-2 text-sm font-medium rounded-md transition-colors ${
+                isCreatingVM || !walletConnected
+                  ? 'text-gray-400 bg-gray-200 cursor-not-allowed dark:bg-gray-700 dark:text-gray-500'
+                  : 'text-white bg-blue-600 hover:bg-blue-700'
+              }`
             },
-              React.createElement(Plus, { className: 'w-4 h-4 mr-2' }),
-              'Add Node'
+              isCreatingVM ? 
+                React.createElement(React.Fragment, null,
+                  React.createElement('div', { className: 'w-4 h-4 mr-2 border-2 border-white border-t-transparent rounded-full animate-spin' }),
+                  'Creating VM...'
+                ) :
+                React.createElement(React.Fragment, null,
+                  React.createElement(Plus, { className: 'w-4 h-4 mr-2' }),
+                  walletConnected ? 'Create VM' : 'Connect Wallet First'
+                )
             ),
             React.createElement('button', {
               onClick: () => actions.scaleSystem(-1),

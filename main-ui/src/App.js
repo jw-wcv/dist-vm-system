@@ -9,6 +9,7 @@ import Sidebar from './components/Sidebar.js';
 import Header from './components/Header.js';
 import Dashboard from './pages/Dashboard.js';
 import VMManager from './pages/VMManager.js';
+import SSHKeys from './pages/SSHKeys.js';
 import TaskManager from './pages/TaskManager.js';
 import ResourceMonitor from './pages/ResourceMonitor.js';
 import Settings from './pages/Settings.js';
@@ -85,6 +86,7 @@ const App = () => {
                 React.createElement(Route, { path: '/dashboard', element: React.createElement(Dashboard) }),
                 React.createElement(Route, { path: '/process-manager', element: React.createElement(ProcessManager) }),
                 React.createElement(Route, { path: '/vm-manager', element: React.createElement(VMManager) }),
+                React.createElement(Route, { path: '/ssh-keys', element: React.createElement(SSHKeys) }),
                 React.createElement(Route, { path: '/network-monitor', element: React.createElement(NetworkMonitor) }),
                 React.createElement(Route, { path: '/resource-monitor', element: React.createElement(ResourceMonitor) }),
                 React.createElement(Route, { path: '/task-manager', element: React.createElement(TaskManager) }),
